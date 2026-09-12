@@ -1,1 +1,4 @@
 shared library.
+
+On case-insensitive filesystems (macOS default), libFLI.so and libFli.so collide.
+libFLI.so was renamed to libFLI_cs.so (identical ELF; same blob). Scripts use libFli.so.
