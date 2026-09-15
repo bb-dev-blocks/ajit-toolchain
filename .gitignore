@@ -76,3 +76,7 @@ ajit_C_system_model
 /AjitPublicResources/tools/antlr3Cruntime/build/
 /AjitPublicResources/tools/antlr3Cruntime/libantlr3c-3.4/
 
+# generated SPARC asm / objects from ajit_access_routines_mt/build_lib.sh
+obj_assembly/
+obj_temp/
+
