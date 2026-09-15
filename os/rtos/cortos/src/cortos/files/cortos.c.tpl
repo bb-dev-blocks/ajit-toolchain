@@ -99,11 +99,11 @@ int __cortos_log_printf(
 }
 
 
-inline uint64_t cortos_get_clock_time() {
+uint64_t cortos_get_clock_time() {
   return __ajit_get_clock_time();
 }
 
-inline void cortos_sleep(uint32_t clock_cycles) {
+void cortos_sleep(uint32_t clock_cycles) {
   __ajit_sleep__(clock_cycles);
 }
 

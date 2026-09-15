@@ -8,11 +8,11 @@ echo "################################################";
 echo "  Building buildroot.";
 echo "################################################";
 sleep 3;
-bash $AJIT_HOME/buildroot_src/setup.sh;
+bash $AJIT_HOME/buildroot_src_2025.02/setup.sh;
 
 
 echo "################################################";
-echo "  AHIR C libs (host gcc) and python3.6 if missing.";
+echo "  AHIR C libs (host gcc); python3.6 prefix only if distro python3 is too old.";
 echo "################################################";
 bash "$AJIT_HOME/scripts/install_ahir_c_libs.sh"
 bash "$AJIT_HOME/scripts/ensure_python36.sh"

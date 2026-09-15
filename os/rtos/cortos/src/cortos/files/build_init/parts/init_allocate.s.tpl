@@ -69,7 +69,7 @@ bnz CORTOS_SETUP_THREADS
 nop
 
   ! set the base address
-  sethi %hi(CORTOS_INIT_TO_ZERO_START}), %l0
+  sethi %hi(CORTOS_INIT_TO_ZERO_START), %l0
   or %l0, %lo(CORTOS_INIT_TO_ZERO_START), %l0
 
   ! set the first illegal address

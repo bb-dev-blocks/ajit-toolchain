@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
-# 16.04 arm64 only: no distro python>=3.6 (CoRTOS uses f-strings). Drop on Ubuntu 24.04.
+# 16.04 arm64 only: no distro python>=3.6 (CoRTOS uses f-strings). Skip if python3 is already >=3.6.
 set -euo pipefail
+if command -v python3 >/dev/null 2>&1 \
+    && python3 -c 'import sys; raise SystemExit(0 if sys.version_info >= (3, 6) else 1)'; then
+  exit 0
+fi
 if command -v python3.6 >/dev/null 2>&1; then
   exit 0
 fi

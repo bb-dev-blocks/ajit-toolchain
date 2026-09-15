@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # compileToSparc.py
 #
@@ -81,7 +81,7 @@ def setGlobals(ajit_uclibc, ajit_libgcc):
 
     global SPARC_CC_FLAGS 
     #SPARC_CC_FLAGS =  " -S -Wall -Werror -m32 -mcpu=v8 -nostdlib -ffreestanding  "
-    SPARC_CC_FLAGS =  " -S -m32 -mcpu=v8 -nostdlib -ffreestanding  "
+    SPARC_CC_FLAGS =  " -S -m32 -mcpu=v8 -fno-pic -fno-pie -nostdlib -ffreestanding  "
 
     global SPARC_CC_OPT_FLAGS 
     SPARC_CC_OPT_FLAGS = " -ffreestanding " 
@@ -479,7 +479,7 @@ def main():
         assembly_files.append(op_file_name)
 
     obj_files =  compileFiles(work_area, src_files, src_dirs, include_dirs, define_strings, assembly_files, assembly_dirs, debug_mode, opt_level, compiler_options)
-    if(len(obj_files)==0):
+    if obj_files == 1 or not obj_files:
        print ("Error: compilation failed... no object files produced" )
        return 1
 

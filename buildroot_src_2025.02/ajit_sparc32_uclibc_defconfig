@@ -1,0 +1,5 @@
+# SPARC V8 32-bit uClibc-ng toolchain (AJIT / CoRTOS). No kernel, no qemu.
+BR2_sparc=y
+BR2_sparc_v8=y
+BR2_TOOLCHAIN_BUILDROOT_UCLIBC=y
+BR2_TOOLCHAIN_BUILDROOT_CXX=y

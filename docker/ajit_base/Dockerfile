@@ -1,7 +1,9 @@
 # A base docker image with all the requirements of the ajit-toolchain
 
-FROM ubuntu:16.04
+FROM ubuntu:24.04
 
+ENV DEBIAN_FRONTEND=noninteractive
+ENV TZ=UTC
 ENV AJIT /home/ajit
 ENV AJIT_HOME /home/ajit/ajit-toolchain
 

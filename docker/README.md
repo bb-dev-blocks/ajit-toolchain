@@ -1,5 +1,7 @@
 Ajit's Docker Images
 =========================
+`ajit_base` is **Ubuntu 24.04**. SPARC toolchain and CoRTOS C-model setup: `../docs/m3-ubuntu24-buildroot2025-arm64mac.md`.
+
 Maintainer: Anshuman Dhuliya (anshumandhuliya@gmail.com)
 
 Each of the four folders here correspond to a

@@ -1,6 +1,8 @@
 README
 =============
-Note: This is tested to work on: Ubuntu 16.04 only.
+**Current Docker path (Apple Silicon):** Ubuntu **24.04**, SPARC V8 32-bit uClibc from **Buildroot 2025.02.18** (gcc 13.4.0), CoRTOS on the C simulator. Setup and examples: `docs/m3-ubuntu24-buildroot2025-arm64mac.md` (same text as aparajit `docs/m3-ajit-ubuntu24-buildroot2025-setup-arm64mac.md`).
+
+The notes below still describe an older Ubuntu 16.04 / Buildroot 2014.08 local layout. Prefer the M3 doc for Docker on arm64.
 
 The documentation of the Ajit toolchain can be found in the
 `./docs` directory. This readme explains the build and setup process.
@@ -12,7 +14,7 @@ Some notes on the build process
 ----------------------------------
 
 If you are going to use the docker setup below,
-it will use Ubuntu 16.04 by default.
+it uses Ubuntu **24.04** (`docker/ajit_base/Dockerfile`).
 For troubleshooting in a local setup, one can refer to the
 docker setup steps which have been well tested.
 

@@ -28,11 +28,19 @@ export AJIT_BUILD_DIR="$AJIT_HOME/build";
 export AJIT_DEBUG_MONITOR_DIR="$AJIT_TOOLS_DIR/ajit_debug_monitor"
 export AJIT_DEBUG_MONITOR_MT_DIR="$AJIT_TOOLS_DIR/ajit_debug_monitor_mt"
 
-export AJIT_BUILDROOT_DIR="$AJIT_BUILD_DIR/buildroot-2014.08";
-export AJIT_BUILDROOT_HOST_DIR="$AJIT_BUILDROOT_DIR/output/host";
-export AJIT_BUILDROOT_BIN_DIR="$AJIT_BUILDROOT_HOST_DIR/usr/bin";
+export AJIT_BUILDROOT_DIR="$AJIT_BUILD_DIR/buildroot-2025.02.18";
+export AJIT_BUILDROOT_HOST_DIR="$AJIT_BUILDROOT_DIR/host";
+if [[ ! -d "$AJIT_BUILDROOT_HOST_DIR/bin" && -d "$AJIT_BUILDROOT_DIR/host/usr/bin" ]]; then
+  export AJIT_BUILDROOT_HOST_DIR="$AJIT_BUILDROOT_DIR/host/usr";
+fi
+export AJIT_BUILDROOT_BIN_DIR="$AJIT_BUILDROOT_HOST_DIR/bin";
 
-export AJIT_UCLIBC_DIR="$AJIT_BUILDROOT_HOST_DIR/usr/sparc-buildroot-linux-uclibc";
+# BR 2025 sysroot is host/<tuple>/sysroot; 2014.08 used host/usr/<tuple>.
+if [[ -d "$AJIT_BUILDROOT_HOST_DIR/sparc-buildroot-linux-uclibc/sysroot" ]]; then
+  export AJIT_UCLIBC_DIR="$AJIT_BUILDROOT_HOST_DIR/sparc-buildroot-linux-uclibc";
+else
+  export AJIT_UCLIBC_DIR="$AJIT_BUILDROOT_HOST_DIR/usr/sparc-buildroot-linux-uclibc";
+fi
 
 export AJIT_CORTOS_DIR="$AJIT_HOME/os/rtos/cortos";
 export AJIT_CORTOS2_DIR="$AJIT_HOME/os/rtos/cortos2";
@@ -56,10 +64,15 @@ popd &> /dev/null;
 ################################################################
 ## START: SET_PROGRAM_EXECUTABLE_PATHS
 ################################################################
-# 16.04 arm64: optional prefix from scripts/ensure_python36.sh. Unused on 24.04.
-if [[ -d $AJIT_BUILD_DIR/opt/python-3.6/bin ]]; then
+# 16.04 arm64 prefix from ensure_python36.sh. Do not prepend when distro python3 is already >=3.6.
+_ajit_py_ok=0
+if command -v python3 >/dev/null 2>&1; then
+  python3 -c 'import sys; raise SystemExit(0 if sys.version_info >= (3, 6) else 1)' && _ajit_py_ok=1
+fi
+if [[ $_ajit_py_ok -eq 0 && -d $AJIT_BUILD_DIR/opt/python-3.6/bin ]]; then
   export PATH=$AJIT_BUILD_DIR/opt/python-3.6/bin:$PATH;
 fi
+unset _ajit_py_ok
 # for: sparc-linux-gcc, sparc-linux-readelf, ...
 export PATH=$AJIT_BUILDROOT_BIN_DIR:$PATH;
 # AjitPublicResources scripts call sparc-linux-* (AJIT_PROJECT_CROSS_COMPILER=sparc-linux).
@@ -130,8 +143,12 @@ export LD_LIBRARY_PATH=$AJIT_DEV_TREE_COMPILER_DIR/libfdt:$LD_LIBRARY_PATH;
 # UCLIBC_INCLUDE="$AJIT_UCLIBC_DIR/include/c++/4.7.4/";
 export AJIT_UCLIBC_HEADERS_DIR="$AJIT_UCLIBC_DIR/sysroot/usr/include";
 
-# python paths
-export PYTHONPATH="$AJIT_TOOLS_DIR/pyelftools-0.25:$AJIT_TOOLS_DIR/scripts:$PYTHONPATH";
+# python paths (vendored pyelftools-0.25 needs collections.MutableMapping; gone in 3.10+)
+if python3 -c 'import sys; raise SystemExit(0 if sys.version_info < (3, 10) else 1)' 2>/dev/null; then
+  export PYTHONPATH="$AJIT_TOOLS_DIR/pyelftools-0.25:$AJIT_TOOLS_DIR/scripts:${PYTHONPATH:-}";
+else
+  export PYTHONPATH="$AJIT_TOOLS_DIR/scripts:${PYTHONPATH:-}";
+fi
 
 ################################################################
 ## END  : SET_LIBRARY_PATHS 
@@ -148,7 +165,16 @@ export AJIT_C_REF_MODEL=$AJIT_CMODEL_DIR;
 export AJIT_PROJECT_CROSS_COMPILER=sparc-linux
 
 export AJIT_UCLIBC_INSTALL_DIR=$AJIT_UCLIBC_LIB_DIR/..;
-export AJIT_LIBGCC_INSTALL_DIR=$AJIT_BUILDROOT_HOST_DIR/usr/lib/gcc/sparc-buildroot-linux-uclibc/4.7.4;
+AJIT_LIBGCC_INSTALL_DIR=""
+for _lg in "$AJIT_BUILDROOT_HOST_DIR"/lib/gcc/sparc-buildroot-linux-uclibc/* \
+           "$AJIT_BUILDROOT_HOST_DIR"/usr/lib/gcc/sparc-buildroot-linux-uclibc/*; do
+  if [[ -f "$_lg/libgcc.a" ]]; then
+    AJIT_LIBGCC_INSTALL_DIR="$_lg"
+    break
+  fi
+done
+unset _lg
+export AJIT_LIBGCC_INSTALL_DIR
 
 export AJIT_UCLIBC_HEADERS=$AJIT_BUILDROOT_DIR/output/build/host-binutils-2.22/include;
 export AJIT_ACCESS_ROUTINES=$AJIT_TOOLS_DIR/ajit_access_routines;

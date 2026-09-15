@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # compileToSparc.py
 #
@@ -77,7 +77,7 @@ def setGlobals(ajit_project_home, ajitcc, ajit_glibc):
     SPARC_CC = COMPILER_PREFIX + "gcc "
 
     global SPARC_CC_FLAGS 
-    SPARC_CC_FLAGS =  " -S -Wall -Werror -m32 -mcpu=v8 -nostdlib -ffreestanding  "
+    SPARC_CC_FLAGS =  " -S -Wall -Werror -m32 -mcpu=v8 -fno-pic -fno-pie -nostdlib -ffreestanding  "
 
     global SPARC_CC_OPT_FLAGS 
     SPARC_CC_OPT_FLAGS = " -ffreestanding " 
