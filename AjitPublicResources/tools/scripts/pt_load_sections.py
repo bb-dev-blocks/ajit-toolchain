@@ -36,10 +36,29 @@ segments = [seg for seg in elfFile.iter_segments()]
 # only "PT_LOAD" segments need to be loaded
 loadSegs = [seg for seg in segments if seg.header["p_type"] == "PT_LOAD"]
 
-# there can be at most two loadable segments
-loadSecs = [sec.name for sec in sections if loadSegs[0].section_in_segment(sec)]
-if (len(loadSegs) >= 2):
-  loadSecs.extend([sec.name for sec in sections if loadSegs[1].section_in_segment(sec)])
+# pyelftools section_in_segment walks every byte of the section. A CoRTOS
+# bget .skip in .text is ~100KB; that hangs, and .data in a later PT_LOAD
+# can be dropped. Match SHF_ALLOC PROGBITS by vaddr overlap instead.
+SHF_ALLOC = 0x2
+seen = set()
+loadSecs = []
+for seg in loadSegs:
+  p_start = seg.header["p_vaddr"]
+  p_end = p_start + seg.header["p_memsz"]
+  for sec in sections:
+    name = sec.name
+    if not name or name in seen:
+      continue
+    sh = sec.header
+    if sh["sh_type"] == "SHT_NOBITS":
+      continue
+    if not (sh["sh_flags"] & SHF_ALLOC):
+      continue
+    s_start = sh["sh_addr"]
+    s_end = s_start + sh["sh_size"]
+    if s_end > p_start and s_start < p_end:
+      seen.add(name)
+      loadSecs.append(name)
 
 for sec in loadSecs:
   if sec.strip():
