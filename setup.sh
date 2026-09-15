@@ -7,11 +7,13 @@
 # It depends on the $AJIT_HOME env variable.
 
 isdocker () {
-  local count=$(cat /proc/1/cgroup | grep docker | wc -l);
-  if [[ count -eq 0 ]]; then
-    false;
-  else
+  # cgroup v2 (Docker Desktop) often has no "docker" in /proc/1/cgroup.
+  if [[ -f /.dockerenv ]]; then
     true;
+  elif grep -q docker /proc/1/cgroup 2>/dev/null; then
+    true;
+  else
+    false;
   fi
 }
 

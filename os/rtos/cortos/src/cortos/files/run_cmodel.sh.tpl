@@ -1,6 +1,7 @@
 #!/bin/sh
 
 # run AJIT C Model on the generated mmap file
+# Debug: add `-w ${_MAIN}.wtrace -d -r {{confObj.resultsFile}} -l ${_MAIN}.log`
 _MAIN="main";
 ajit_C_system_model \
   -n {{confObj.coreCount}} \
@@ -12,8 +13,4 @@ ajit_C_system_model \
   -p {{confObj.startingDebugPort+i}} \
 % end
 % end
-  -m ${_MAIN}.mmap.remapped \
-  -w ${_MAIN}.wtrace \
-  -d \
-  -r {{confObj.resultsFile}} \
-  -l ${_MAIN}.log;
+  -m ${_MAIN}.mmap.remapped;

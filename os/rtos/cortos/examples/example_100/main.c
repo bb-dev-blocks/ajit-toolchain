@@ -9,7 +9,7 @@
 #include<math.h>
 #include "cortos.h"
 
-#define MAX_LIMIT 1000
+#define MAX_LIMIT 10
 
 int b;
 int *i0 = SHARED_INT_ADDR_0;

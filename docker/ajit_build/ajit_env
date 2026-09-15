@@ -56,8 +56,23 @@ popd &> /dev/null;
 ################################################################
 ## START: SET_PROGRAM_EXECUTABLE_PATHS
 ################################################################
+# 16.04 arm64: optional prefix from scripts/ensure_python36.sh. Unused on 24.04.
+if [[ -d $AJIT_BUILD_DIR/opt/python-3.6/bin ]]; then
+  export PATH=$AJIT_BUILD_DIR/opt/python-3.6/bin:$PATH;
+fi
 # for: sparc-linux-gcc, sparc-linux-readelf, ...
 export PATH=$AJIT_BUILDROOT_BIN_DIR:$PATH;
+# AjitPublicResources scripts call sparc-linux-* (AJIT_PROJECT_CROSS_COMPILER=sparc-linux).
+if [[ -d $AJIT_BUILDROOT_BIN_DIR ]]; then
+  for _t in gcc as ar ld nm objcopy objdump ranlib readelf strip cpp gcov gprof addr2line size strings elfedit gcc-ar gcc-nm gcc-ranlib; do
+    _long="$AJIT_BUILDROOT_BIN_DIR/sparc-buildroot-linux-uclibc-${_t}";
+    _short="$AJIT_BUILDROOT_BIN_DIR/sparc-linux-${_t}";
+    if [[ -e "$_long" && ! -e "$_short" ]]; then
+      ln -s "$(basename "$_long")" "$_short";
+    fi
+  done
+  unset _t _long _short;
+fi
 # for: compileToSparc.py, pt_load_sections.py, ...
 export PATH=$AJIT_SCRIPTS_DIR:$PATH;
 # for: generateMemoryMap_Byte

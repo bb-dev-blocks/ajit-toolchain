@@ -14,4 +14,14 @@ fi
 
 export PATH=$ABS_BIN_DIR_PATH:$PATH;
 
+# AjitPublicResources scripts call sparc-linux-gcc (see AJIT_PROJECT_CROSS_COMPILER).
+for _t in gcc as ar ld nm objcopy objdump ranlib readelf strip cpp gcov gprof addr2line size strings elfedit gcc-ar gcc-nm gcc-ranlib; do
+  _long="$ABS_BIN_DIR_PATH/sparc-buildroot-linux-uclibc-${_t}";
+  _short="$ABS_BIN_DIR_PATH/sparc-linux-${_t}";
+  if [[ -e "$_long" && ! -e "$_short" ]]; then
+    ln -s "$(basename "$_long")" "$_short";
+  fi
+done
+unset _t _long _short;
+
 

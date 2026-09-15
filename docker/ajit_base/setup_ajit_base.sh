@@ -42,24 +42,28 @@
     bison \
     flex \
     libreadline-dev \
+    libssl-dev \
+    zlib1g-dev \
+    libffi-dev \
     gedit \
     software-properties-common \
 && \
-  add-apt-repository ppa:jblgf0/python \
-&& \
-  apt-get update \
-&& \
-  apt-get -y install python3.6 \
+  if [ "$(dpkg --print-architecture)" = amd64 ]; then \
+    # ppa:jblgf0/python has python3.6 for amd64 only; arm64 uses distro python3.
+    add-apt-repository ppa:jblgf0/python \
+    && apt-get update \
+    && apt-get -y install python3.6 \
+    && wget https://bootstrap.pypa.io/pip/3.6/get-pip.py \
+    && python3.6 get-pip.py \
+    && pip install --no-cache-dir pyelftools pyyaml; \
+  else \
+    apt-get -y install --no-install-recommends python3-pip \
+    && pip3 install --no-cache-dir pyelftools pyyaml; \
+  fi \
 && \
   apt-get -y autoremove \
 && \
   apt-get clean \
-&& \
-  wget  https://bootstrap.pypa.io/pip/3.6/get-pip.py  \
-&& \
-  python3.6 get-pip.py \
-&& \
-  pip install --no-cache-dir pyelftools pyyaml \
 && \
   rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 

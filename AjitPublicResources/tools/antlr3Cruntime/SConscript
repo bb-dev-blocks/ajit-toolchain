@@ -14,7 +14,7 @@ def runSyscmd(cmd):
         code = os.WEXITSTATUS(res)
         if code != 0:
             print "Error: return code: " + str(code)
-            if SCons.Script.keep_going_on_error == 0:
+            if getattr(SCons.Script, 'keep_going_on_error', 0) == 0:
                 sys.exit(code)
 
 def ConfigureMake(target, source, env):
@@ -31,16 +31,42 @@ def ConfigureMake(target, source, env):
     # Change to the top of the source tree for building
     os.chdir(workDir + "/" + pkg_name)
 
+    import platform
+    mach = platform.machine()
+
+    # 2009 config.guess / header probes fail on aarch64 (bogus size_t, empty HAVE_*).
+    if mach in ('aarch64', 'arm64'):
+        cfg = open('antlr3config.h').read()
+        for a, b in (
+            ('/* #undef ANTLR3_USE_64BIT */', '#define ANTLR3_USE_64BIT 1'),
+            ('/* #undef HAVE_ACCEPT */', '#define HAVE_ACCEPT 1'),
+            ('/* #undef HAVE_CTYPE_H */', '#define HAVE_CTYPE_H 1'),
+            ('/* #undef HAVE_NETINET_IN_H */', '#define HAVE_NETINET_IN_H 1'),
+            ('/* #undef HAVE_NETINET_TCP_H */', '#define HAVE_NETINET_TCP_H 1'),
+            ('/* #undef HAVE_STDARG_H */', '#define HAVE_STDARG_H 1'),
+            ('/* #undef HAVE_SYS_SOCKET_H */', '#define HAVE_SYS_SOCKET_H 1'),
+            ('/* #undef HAVE_NETDB_H */', '#define HAVE_NETDB_H 1'),
+            ('#define size_t unsigned int\n', ''),
+        ):
+            cfg = cfg.replace(a, b)
+        open('antlr3config.h', 'w').write(cfg)
+        runSyscmd('mkdir -p ' + buildDir + '/lib ' + buildDir + '/include')
+        runSyscmd('gcc -c -fPIC -O2 -DHAVE_CONFIG_H -I. -Iinclude src/*.c')
+        runSyscmd('ar rcs ' + buildDir + '/lib/libantlr3c.a *.o')
+        runSyscmd('gcc -shared -o ' + buildDir + '/lib/libantlr3c.so *.o')
+        runSyscmd('cp include/*.h antlr3config.h ' + buildDir + '/include/')
+        runSyscmd('rm -f *.o')
+        os.chdir(baseDir)
+        return 0
+
     # See if configure needs to be run. Doesn't check for failed configures
     if os.path.exists('config.status'):
         print 'configure is up-to-date'
     else: 
         cmd= "./configure --prefix="+buildDir+" --exec-prefix="+buildDir+" "
-
-        #check if this system is 64 bit
-        is_64bits = sys.maxsize > 2**32
-        if (is_64bits) :
-	        cmd= cmd+" --enable-64bit "
+        # --enable-64bit injects gcc -m64; aarch64 gcc rejects that flag.
+        if sys.maxsize > 2**32 and mach not in ('aarch64', 'arm64'):
+            cmd = cmd + " --enable-64bit "
         runSyscmd(cmd)
 
     # See if make needs to be run.

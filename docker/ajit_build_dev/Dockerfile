@@ -16,11 +16,11 @@ ARG gid
 ARG user
 ARG group
 
-RUN groupadd -g ${gid} ${group}
-RUN cat /etc/group
-RUN useradd -u ${uid} -g ${gid} -m -d /home/ajit -s /bin/bash ${user}
-RUN cat /etc/group
-RUN cat /etc/passwd
+# Host uid/gid may already exist in the image (e.g. Darwin gid 20 = dialout).
+RUN if ! getent group ${gid} >/dev/null; then groupadd -g ${gid} ${group}; fi
+RUN if ! getent passwd ${uid} >/dev/null; then \
+      useradd -u ${uid} -g ${gid} -m -d /home/ajit -s /bin/bash ${user}; \
+    fi
 
 # No work is done while building the image in development
 # version. The building has to be initiated manually inside

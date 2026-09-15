@@ -19,6 +19,7 @@ rm -rf obj_temp
 rm -rf obj_assembly
 mkdir  obj_temp
 mkdir  obj_assembly
+mkdir -p lib
 
 #
 #

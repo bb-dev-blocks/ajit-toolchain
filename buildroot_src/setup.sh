@@ -25,6 +25,14 @@ export DEVELOPMENT=development;
   # STEP 1: Start the build.
   $SRC/start_build.sh;
 
+  # SPARC ld uses -static; incomplete sysroot install can omit libc.a/libm.a.
+  _uclibc_lib=$(echo $BUILD_DIR/$BUILDROOT_DIR_NAME/output/build/uclibc-*/lib)
+  _sysroot_lib=$BUILD_DIR/$BUILDROOT_DIR_NAME/output/host/usr/sparc-buildroot-linux-uclibc/sysroot/usr/lib
+  if [[ -f $_uclibc_lib/libc.a && ! -f $_sysroot_lib/libc.a ]]; then
+    cp -a $_uclibc_lib/*.a $_sysroot_lib/
+  fi
+  unset _uclibc_lib _sysroot_lib
+
 
   # STPE 2: set the path
   source $SRC/pathsetup.sh
