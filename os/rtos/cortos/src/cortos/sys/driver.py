@@ -8,10 +8,13 @@ This is invoked by main.py and the test routines.
 """
 
 import argparse
+import os
 
 from cortos.common import consts, util
 import cortos.sys.config as config
 import cortos.sys.build as build
+import cortos.sys.targets as targets
+import cortos.sys.qemu as qemu
 from cortos.common.util import FileNameT
 from cortos.common import bottle as btl
 
@@ -62,11 +65,23 @@ def buildProject(args: argparse.Namespace) -> None:
   It creates a configuration object and starts the build process
   which uses the object.
   """
+  target = targets.by_name(args.target)
+  ramstart = args.ramstart if args.ramstart is not None else target.default_ram_start
   configFileName = args.configFileName
-  confObj = config.readYamlConfig(configFileName, args.ramstart)
+  confObj = config.readYamlConfig(configFileName, ramstart, target)
   confObj.addDebugSupport(args.debug, args.port)
   confObj.addOptLevel(args.O0, args.O1, args.O2)
   build.buildProject(confObj)
+
+
+def runProject(args: argparse.Namespace) -> None:
+  """Run a built project (qemu-ajit today)."""
+  target = targets.by_name(args.target)
+  if target.name != targets.QEMU.name:
+    print("CoRTOS: ERROR: cortos run currently supports --target qemu only."
+          " Use ./run.sh for the C-model.")
+    raise SystemExit(1)
+  qemu.run_qemu(os.getcwd(), timeout_sec=args.timeout)
 
 
 def getParser() -> argparse.ArgumentParser:
@@ -90,12 +105,29 @@ def getParser() -> argparse.ArgumentParser:
                       help="Optimization level 1 (O1).")
   subpar.add_argument('-O2', '--O2', action='store_true', default=False,
                       help="Optimization level 2 (O2).")
-  subpar.add_argument('-s', '--ramstart', type=lambda x: int(x, 0), default=0x0,
-                      help="Starting RAM address (must be 16MB aligned).")
+  subpar.add_argument(
+      '--target',
+      choices=sorted(targets.BY_NAME.keys()),
+      default=targets.CMODEL.name,
+      help="cmodel (default) or qemu.")
+  subpar.add_argument('-s', '--ramstart', type=lambda x: int(x, 0), default=None,
+                      help="Starting RAM address. C-model: 16MB aligned, default 0x0."
+                           " qemu: default 0x00100000, not 16MB-aligned.")
   subpar.add_argument("configFileName",
                       nargs="?",
                       default=consts.CONFIG_FILE_DEFAULT_NAME,
                       help=f"{consts.CONFIG_FILE_DEFAULT_NAME} file path.")
+
+  # subcommand: run
+  subpar = subParser.add_parser("run", help="Run a built project.")
+  subpar.set_defaults(func=runProject)
+  subpar.add_argument(
+      '--target',
+      choices=sorted(targets.BY_NAME.keys()),
+      default=targets.QEMU.name,
+      help="qemu (default). C-model still uses ./run.sh.")
+  subpar.add_argument('--timeout', type=int, default=qemu.DEFAULT_TIMEOUT_SEC,
+                      help="Wall seconds before killing qemu.")
 
   # subcommand: print
   subpar = subParser.add_parser("show", help="Show a specific detail")

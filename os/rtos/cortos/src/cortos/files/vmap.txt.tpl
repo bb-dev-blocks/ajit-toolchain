@@ -1,8 +1,8 @@
 % size16mb = 16 * 1024 * 1024
-0x0 {{hex(confObj.ramStartAddr)}} {{hex(confObj.ramStartAddr)}} 0x1
-0x0 {{hex(confObj.ramStartAddr + size16mb)}} {{hex(confObj.ramStartAddr + size16mb)}} 0x1
-0x0 {{hex(confObj.ramStartAddr + 2*size16mb)}} {{hex(confObj.ramStartAddr + 2*size16mb)}} 0x1
-0x0 {{hex(confObj.ramStartAddr + 3*size16mb)}} {{hex(confObj.ramStartAddr + 3*size16mb)}} 0x1
+0x0 {{hex(vmapRamStart)}} {{hex(vmapRamStart)}} 0x1
+0x0 {{hex(vmapRamStart + size16mb)}} {{hex(vmapRamStart + size16mb)}} 0x1
+0x0 {{hex(vmapRamStart + 2*size16mb)}} {{hex(vmapRamStart + 2*size16mb)}} 0x1
+0x0 {{hex(vmapRamStart + 3*size16mb)}} {{hex(vmapRamStart + 3*size16mb)}} 0x1
 0x0 0xFFFF0000 0xFFFF0000 0x3
 0x0 0xFFFF1000 0xFFFF1000 0x3
 0x0 0xFFFF2000 0xFFFF2000 0x3

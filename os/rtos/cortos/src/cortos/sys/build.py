@@ -22,14 +22,12 @@ import cortos.sys.copy as cpy
 def buildProject(confObj: config.UserConfig) -> None:
   print("CoRTOS: build process started...")
 
-  print(f"\nCoRTOS: START: cortos_build.")
+  buildName = osp.basename(confObj.buildDir)
+  print(f"\nCoRTOS: START: {buildName} (target={confObj.target.name}).")
   computeStackAddr(confObj) # FIXME: call it from some other place?
   prepareBuildDir(confObj)
   runBuildScript(confObj)
-  # computeElfSize(confObj)
-  # prepareFinalBuildDir(confObj)
-  # runBuildScript(confObj)
-  print(f"CoRTOS: END  : cortos_build.")
+  print(f"CoRTOS: END  : {buildName}.")
 
 
 def prepareBuildDir(

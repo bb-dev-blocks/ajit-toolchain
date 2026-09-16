@@ -86,6 +86,7 @@ DEFAULT_PROG_ELF_SIZE = 40960 # bytes
 INIT_BUILD_DIR_NAME: str = "build_init"
 FINAL_BUILD_DIR_NAME: str = "build_final"
 CORTOS_BUILD_DIR_NAME: str = "cortos_build"
+CORTOS_BUILD_QEMU_DIR_NAME: str = "cortos_build_qemu"
 CORTOS_SRC_DIR_NAME: str = "cortos_src"
 
 

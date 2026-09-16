@@ -2,6 +2,8 @@
 ! BLOCK START: mmu_and_page_table_waits
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+% if confObj.target.enable_mmu:
+
 AFTER_PTABLE_SETUP:
   !  threads (0,0), (1,0), ... come here, and check if PT_FLAG is set.
   set PT_FLAG, %l6
@@ -36,6 +38,16 @@ WAIT_UNTIL_MMU_IS_ENABLED:
   ! spin as long as mmu_control = 0.
   bz WAIT_UNTIL_MMU_IS_ENABLED
   nop
+
+% else:
+
+! qemu-ajit: stay on the physical map (RAM at 0x00100000). Do not enable MMU.
+AFTER_PTABLE_SETUP:
+WAIT_UNTIL_MMU_IS_ENABLED:
+  ba CORTOS_START_THREADS
+  nop
+
+% end
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! BLOCK END  : mmu_and_page_table_waits

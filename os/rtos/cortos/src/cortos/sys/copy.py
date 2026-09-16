@@ -14,6 +14,7 @@ import cortos.sys.config as config
 from cortos.common import bottle as btl
 
 from cortos.common import consts, util
+from cortos.sys import targets as cortos_targets
 
 
 def copyTrapFile(
@@ -36,6 +37,7 @@ def copyVmapFile(
   with open(consts.VMAP_FILE_NAME, "w") as f:
     f.write(btl.template(f"{consts.VMAP_FILE_NAME}",
       confObj=confObj,
+      vmapRamStart=cortos_targets.vmap_ram_start(confObj),
     ))
 
 

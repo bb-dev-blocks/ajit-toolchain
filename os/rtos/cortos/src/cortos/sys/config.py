@@ -15,6 +15,7 @@ import os.path as osp
 # Yaml key names
 import cortos.common.consts as consts
 import cortos.sys.compute as compute
+import cortos.sys.targets as targets
 
 YML_CORES = "Cores"
 YML_THREADS = "ThreadsPerCore"
@@ -101,11 +102,13 @@ class UserConfig:
   def __init__(self,
       data,
       ramStartAddr = 0x0,
+      target: 'targets.BuildTarget' = None,
   ):
     self.data = data
 
+    self.target = target if target is not None else targets.CMODEL
     self.rootDir = os.getcwd()
-    self.buildDir = osp.join(self.rootDir, consts.CORTOS_BUILD_DIR_NAME)
+    self.buildDir = osp.join(self.rootDir, self.target.build_dir_name)
     self.cortosSrcDir = osp.join(self.buildDir, consts.CORTOS_SRC_DIR_NAME)
     self.cFileNames: List[str] = []
     self.resultsFile: str = consts.DEFAULT_RESULTS_FILE_NAME
@@ -428,12 +431,13 @@ class DataMemoryRegions:
 
 def readYamlConfig(
     yamlFileName: util.FileNameT,
-    ramStartAddr: int,
+    ramStartAddr: int = 0x0,
+    target: 'targets.BuildTarget' = None,
     cmdLineLogLevel: consts.LogLevel = consts.LogLevel.NONE,
 ) -> UserConfig:
   """Reads the given yaml configuration file."""
   with open(yamlFileName) as f:
     conf = yaml.safe_load(f)
-    return UserConfig(conf, ramStartAddr)
+    return UserConfig(conf, ramStartAddr, target)
 
 
