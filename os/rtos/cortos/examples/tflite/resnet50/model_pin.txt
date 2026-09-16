@@ -1,0 +1,12 @@
+file: resnet50_int8.tflite
+bytes: 26327248
+sha256: 1753841ba8ce7ca250456db146d0d4c7035d9c15100ce3d2cb563cebde57eb22
+source: Qualcomm AI Hub ResNet50 TFLITE w8a8 (qai-hub-models resnet50 v0.62.2)
+page: https://huggingface.co/qualcomm/ResNet50
+fetch: https://huggingface.co/qualcomm/ResNet50  (download TFLITE w8a8 zip only)
+zip: https://qaihub-public-assets.s3.us-west-2.amazonaws.com/qai-hub-models/models/resnet50/releases/v0.62.2/resnet50-tflite-w8a8.zip
+zip_sha256: 296580402848709ff13b1d5b4db8d1a5248e0dcc3bc2759076572c3bb323df7b
+zip_inner: resnet50-tflite-w8a8/resnet50.tflite
+io: input uint8 NHWC 1x224x224x3 scale~1/255 zp=0; output uint8 1x1000
+skip: ONNX, DLC, QNN packages from the same Hub page — TFLM needs this TFLite only
+notes: torchvision ResNet-50, 1000-class ImageNet (index 0 = tench). Not Keras Caffe preprocess. Host precheck is the next gate (TFLM may still reject an op).

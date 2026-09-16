@@ -1,0 +1,4 @@
+gen/
+expected_uart.txt
+*.zip
+resnet50-tflite-w8a8/
