@@ -2,3 +2,7 @@
 	path = ahir
 	url = git@github.com:bb-dev-blocks/ahir.git
 	branch = marshal_updates
+[submodule "tflite-micro"]
+	path = tflite-micro
+	url = git@github.com:bb-dev-blocks/tflite-micro.git
+	branch = sparc-ajit

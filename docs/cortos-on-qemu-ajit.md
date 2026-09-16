@@ -62,6 +62,49 @@ cd os/rtos/cortos/examples/example_001
 
 If an example cannot run on qemu-ajit, replace `pending` with **skip** and state the reason here. No silent skip.
 
+## TFLite Micro
+
+Tree: `os/rtos/cortos/examples/tflite/`. Shared crt0, linker, `run_qemu_elf.py`. Tests compile from the `tflite-micro` submodule. CoRTOS yaml: `ExtraCc`, `ExtraIncludes`, `ExtraLibDirs`.
+
+| Example | bare-metal qemu | CoRTOS qemu | C-model |
+|---|---|---|---|
+| `hello_world` | pass | pass | pass |
+| `micro_speech` | pass | pass | skip |
+| `kernels/conv` | pass | pass | — |
+| `kernels/depthwise_conv` | pass | pass | — |
+| `kernels/fully_connected` | pass | pass | — |
+| `kernels/softmax` | pass | pass | — |
+| `kernels/add` | pass | pass | — |
+| `kernels/pooling` | pass | pass | — |
+| `kernels/pad` | pass | pass | — |
+| `kernels/activations` | pass | pass | — |
+| `kernels/mul` | pass | pass | — |
+| `person_detection` | pass | pass | — |
+
+`micro_speech` C-model: `./build.sh` ok. `./run.sh` ran `ajit_C_system_model` more than five minutes at full CPU with only unmapped UART-probe warnings (`0xffff3218`–`0xffff3238`). qemu 2+3 printed `[==========] 6 tests ran.` and `~~~ALL TESTS PASSED~~~` in under a second. Re-try only if you want a long C-model wait.
+
+```bash
+cd os/rtos/cortos/examples/tflite/hello_world
+./build_baremetal_qemu.sh && ./run_baremetal_qemu.sh
+./build_qemu.sh && ./run_qemu.sh
+./build.sh && ./run.sh
+
+cd os/rtos/cortos/examples/tflite/micro_speech
+./build_baremetal_qemu.sh && ./run_baremetal_qemu.sh
+./build_qemu.sh && ./run_qemu.sh
+
+# kernels: conv depthwise_conv fully_connected softmax add pooling pad activations mul
+cd os/rtos/cortos/examples/tflite/kernels/conv
+./build_baremetal_qemu.sh && ./run_baremetal_qemu.sh
+./build_qemu.sh && ./run_qemu.sh
+
+cd os/rtos/cortos/examples/tflite/person_detection
+./build_baremetal_qemu.sh && ./run_baremetal_qemu.sh
+./build_qemu.sh && ./run_qemu.sh
+```
+
+Pass string: `~~~ALL TESTS PASSED~~~`.
+
 ## C-model regression
 
 `example_{001,050,100,150,250}`: `./build.sh && ./run.sh` must still exit 0.

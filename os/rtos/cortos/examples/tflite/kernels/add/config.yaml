@@ -1,0 +1,28 @@
+# yaml configuration file for linker/loader of Co-RTOS
+
+Cores: 1
+ThreadsPerCore: 1
+TotalMemoryInKB: 8192
+LogLevel: NONE
+
+ProgramThreads:
+  - CortosInitCalls:
+      - tflite_cortos_start
+    StackSizeInBytes: 65536
+
+ExtraCc:
+  - tflite-micro/tensorflow/lite/micro/kernels/add_test.cc
+  - os/rtos/cortos/examples/tflite/cxxstub.cc
+
+ExtraIncludes:
+  - tflite-micro
+  - tflite-micro/gen/ajit_sparc_default_gcc/genfiles
+  - tflite-micro/tensorflow/lite/micro/tools/make/downloads
+  - tflite-micro/tensorflow/lite/micro/tools/make/downloads/gemmlowp
+  - tflite-micro/tensorflow/lite/micro/tools/make/downloads/flatbuffers/include
+  - tflite-micro/tensorflow/lite/micro/tools/make/downloads/kissfft
+  - tflite-micro/tensorflow/lite/micro/tools/make/downloads/ruy
+
+ExtraLibDirs:
+  - tflite-micro/gen/ajit_sparc_default_gcc/lib
+

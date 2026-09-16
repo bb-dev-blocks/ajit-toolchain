@@ -30,8 +30,15 @@ _BGET="$_CORTOS_SRC_DIR/__bget.c";
 % end
 
 
-# genVmapAsm ${_CORTOS_VMAP} ${_CORTOS_PG_TABLES};
-#  -s $_CORTOS_PG_TABLES \
+% if confObj.extraCc:
+_TFLITE_CXXFLAGS="-S -fno-pic -fno-pie -m32 -mcpu=v8 -std=c++17 -fno-rtti -fno-exceptions -fno-threadsafe-statics -fno-use-cxa-atexit -fpermissive -fno-builtin-printf -funsigned-char -fno-delete-null-pointer-checks -fomit-frame-pointer -ffunction-sections -fdata-sections -DTF_LITE_STATIC_MEMORY -DTF_LITE_DISABLE_X86_NEON -DTF_LITE_MCU_DEBUG_LOG -DTF_LITE_USE_GLOBAL_CMATH_FUNCTIONS -DTF_LITE_USE_GLOBAL_MIN -DTF_LITE_USE_GLOBAL_MAX -I${AJIT_UCLIBC_HEADERS_DIR}"
+% for inc in confObj.extraIncludes:
+_TFLITE_CXXFLAGS="${_TFLITE_CXXFLAGS} -I {{inc}}"
+% end
+% for i, cc in enumerate(confObj.extraCc):
+sparc-linux-g++ ${_TFLITE_CXXFLAGS} "{{cc}}" -o extra_cc_{{i}}.s
+% end
+% end
 
 # NOTE: the use of `-U` to enable uclibc
 compileToSparcUclibc.py \
@@ -54,6 +61,12 @@ compileToSparcUclibc.py \
   -s ${_CORTOS_Q_LOCK_UNLOCK} \
 % for fileName in confObj.cFileNames:
   -c {{fileName}} \
+% end
+% for i, cc in enumerate(confObj.extraCc):
+  -s extra_cc_{{i}}.s \
+% end
+% for d in confObj.extraLibDirs:
+  -l {{d}} \
 % end
   -c ${_CORTOS_MSG_QUEUE} \
   -c ${_CORTOS_C} \

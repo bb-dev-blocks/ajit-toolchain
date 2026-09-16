@@ -34,6 +34,9 @@ YML_TOTAL_LOCK_VARS = "TotalLockVars"
 YML_ADD_BGET = "AddBget"
 
 YML_LOG_LEVEL = "LogLevel"
+YML_EXTRA_CC = "ExtraCc"
+YML_EXTRA_INCLUDES = "ExtraIncludes"
+YML_EXTRA_LIB_DIRS = "ExtraLibDirs"
 
 
 class CortosThread:
@@ -135,6 +138,9 @@ class UserConfig:
     self.addBget: bool = False
     self.logLevel: consts.LogLevel = consts.DEFAULT_LOG_LEVEL
     self.enableSerial: bool = consts.DEFAULT_ENABLE_SERIAL_DEVICE
+    self.extraCc: List[str] = []
+    self.extraIncludes: List[str] = []
+    self.extraLibDirs: List[str] = []
 
     self.debugBuild: bool = consts.DEFAULT_DEBUG_BUILD
     self.optLevel: int = consts.DEFAULT_OPT_LEVEL  # 0, 1 or 2
@@ -189,6 +195,17 @@ class UserConfig:
       if YML_LOG_LEVEL in self.data else None
     self.logLevel = consts.LogLevel[logLevelStr.upper()] \
       if logLevelStr else consts.DEFAULT_LOG_LEVEL
+
+    home = os.environ.get("AJIT_HOME", "")
+
+    def ajitPath(p: str) -> str:
+      if osp.isabs(p):
+        return p
+      return osp.join(home, p) if home else p
+
+    self.extraCc = [ajitPath(p) for p in (self.data.get(YML_EXTRA_CC) or [])]
+    self.extraIncludes = [ajitPath(p) for p in (self.data.get(YML_EXTRA_INCLUDES) or [])]
+    self.extraLibDirs = [ajitPath(p) for p in (self.data.get(YML_EXTRA_LIB_DIRS) or [])]
 
     # TODO: add queue related configuration.
 
