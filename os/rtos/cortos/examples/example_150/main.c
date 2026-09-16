@@ -23,19 +23,19 @@ void cortos_entry_func_001() {
   msg1.intArr[0] = 1;
   queueId = cortos_reserveQueue();
 
-  CORTOS_TRACE("Sending Message 1");
+  CORTOS_TRACE("Sending Message 1\n");
   cortos_writeMessage(queueId, &msg1);
 
   msg1.intArr[0] = 2;
-  CORTOS_TRACE("Sending Message 2");
+  CORTOS_TRACE("Sending Message 2\n");
   cortos_writeMessage(queueId, &msg1);
 
   msg1.intArr[0] = 6;
-  CORTOS_TRACE("Sending Message 3");
+  CORTOS_TRACE("Sending Message 3\n");
   cortos_writeMessage(queueId, &msg1);
 
   msg1.intArr[0] = 1;
-  CORTOS_TRACE("Sending Message 4");
+  CORTOS_TRACE("Sending Message 4\n");
   cortos_writeMessage(queueId, &msg1);
 
   cortos_exit(0);
@@ -54,7 +54,7 @@ void cortos_entry_func_101() {
   while(i < totalMsgs) {
     status = cortos_readMessage(queueId, &msg2);
     if (status) {
-      CORTOS_TRACE("Received Message %d", i+1);
+      CORTOS_TRACE("Received Message %d\n", i+1);
       *i0 += msg2.intArr[0];
       ++i;
     }

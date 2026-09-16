@@ -131116,6 +131116,7 @@ int main() {
   int start = step*tid;
 
   quicksort(arr, start, start+step-1);
+  cortos_printf("sort done tid %d\n", (int)tid);
 
   // merge different segments of sorted elements.
 }

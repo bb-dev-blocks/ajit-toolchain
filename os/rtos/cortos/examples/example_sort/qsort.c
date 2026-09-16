@@ -1,3 +1,5 @@
+/* Unused leftover; main.c defines quicksort for char[]. Kept so old trees stay recognizable. */
+#if 0
 void quicksort(int number[25],int first,int last){
    int i, j, pivot, temp;
 
@@ -26,3 +28,4 @@ void quicksort(int number[25],int first,int last){
 
    }
 }
+#endif

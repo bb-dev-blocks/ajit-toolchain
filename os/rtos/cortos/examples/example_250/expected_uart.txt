@@ -1,0 +1,2 @@
+Acquiring Memory!
+Received Message!

@@ -12,10 +12,12 @@ void main() {} // important, but kept empty
 
 void ajit_entry_func_001() {
   b = (int)cos(0);
+  cortos_printf("050 thread 0,0\n");
   cortos_exit(0); // safely exit
 }
 
 void ajit_entry_func_010() {
   b = (int)cos(0);
+  cortos_printf("050 thread 0,1\n");
   cortos_exit(0); // safely exit
 }

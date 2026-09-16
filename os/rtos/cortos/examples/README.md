@@ -35,8 +35,11 @@ A project consists of the following necessary components,
 ## How to run the examples?
 In each example_XXX project directory do the following,
 
-    ./build.sh  # builds the project
-    ./run.sh    # runs the project
+    ./build.sh  # builds the project for the C simulator
+    ./run.sh    # runs the project on the C simulator
+
+    ./build_qemu.sh  # qemu-ajit image in cortos_build_qemu/
+    ./run_qemu.sh    # headless qemu; see docs/cortos-on-qemu-ajit.md
 
 
 ## How a cortos project is built?

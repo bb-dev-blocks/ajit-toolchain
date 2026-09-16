@@ -1,0 +1,2 @@
+Thread 0,0 finished
+Thread 0,1 finished
