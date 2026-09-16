@@ -1,0 +1,70 @@
+# qemu-ajit-v1.0 — aparajit local vendored tree
+#
+# Sources are committed in-repo; builds and upstream sync metadata are not.
+# Build entry: scripts/docker/build-qemu.sh  →  build/qemu-system-sparc
+
+# ---------------------------------------------------------------------------
+# Upstream QEMU git / CI / release tooling (not used in aparajit)
+# ---------------------------------------------------------------------------
+.gitmodules
+.gitattributes
+.git-blame-ignore-revs
+.gitpublish
+.github/
+.gitlab/
+.gitlab-ci.d/
+.gitlab-ci.yml
+.travis.yml
+.patchew.yml
+.readthedocs.yml
+.b4-config
+.mailmap
+.stgit-*
+.git-submodule-status
+
+# Nested submodule checkouts ship as plain source; drop their .git metadata.
+**/.git/
+
+# ---------------------------------------------------------------------------
+# QEMU configure + meson/ninja build tree
+# ---------------------------------------------------------------------------
+/build/
+/.cache/
+
+# Out-of-tree configure leftovers (unusual here; build/ is the normal path)
+/GNUmakefile
+/config-host.mak
+/config-target.mak
+/config-host.h
+/config-target.h
+/config.log
+/config.status
+/qemu-options.def
+/trace-events-all
+/ui/shader/*.c
+
+# Meson subproject build dirs and download cache
+/subprojects/packagecache/
+/subprojects/*/build/
+
+# ---------------------------------------------------------------------------
+# Developer / editor / analysis artifacts
+# ---------------------------------------------------------------------------
+/.vscode/
+/.clang-format
+/.gdb_history
+*.pyc
+.sdk
+cscope.*
+tags
+TAGS
+GPATH
+GRTAGS
+GTAGS
+*~
+*.ast_raw
+*.depend_raw
+*.swp
+*.patch
+*.gcov
+compile_commands.json

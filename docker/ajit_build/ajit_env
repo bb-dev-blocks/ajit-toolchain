@@ -116,6 +116,11 @@ export PATH=$AJIT_UART_INTERFACE_DIR/bin:$PATH
 export PATH=$AJIT_CORTOS_DIR:$PATH
 export PATH=$AJIT_CORTOS2_DIR:$PATH
 
+# qemu-ajit (built by setup_qemu.sh into $AJIT_HOME/build)
+export AJIT_QEMU_SRC_DIR=$AJIT_HOME/qemu-ajit-v1.0
+export AJIT_QEMU_BUILD_DIR=$AJIT_BUILD_DIR/qemu-ajit-v1.0
+export PATH=$AJIT_QEMU_BUILD_DIR:$PATH
+
 # points to the C system model executable
 export AJIT_CMODEL="$AJIT_CMODEL_BIN_DIR/ajit_C_system_model";
 

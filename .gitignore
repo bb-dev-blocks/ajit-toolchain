@@ -80,3 +80,6 @@ ajit_C_system_model
 obj_assembly/
 obj_temp/
 
+# qemu-ajit in-tree configure leftovers (canonical build is $AJIT_HOME/build/qemu-ajit-v1.0)
+qemu-ajit-v1.0/build/
+

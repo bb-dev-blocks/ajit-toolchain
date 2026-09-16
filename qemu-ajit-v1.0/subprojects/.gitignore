@@ -1,0 +1,9 @@
+# Meson subproject cache (downloaded wraps). Sources under dtc/, berkeley-*, etc.
+# are vendored in-tree for aparajit and must remain tracked.
+/packagecache
+
+# Per-subproject meson build output
+/*/build/
+
+# Nested git metadata from upstream wraps (sources stay tracked)
+**/.git/

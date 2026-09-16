@@ -46,6 +46,13 @@ export DEBIAN_FRONTEND=noninteractive
     git \
     which \
     gawk \
+    ninja-build \
+    pkg-config \
+    meson \
+    python3-setuptools \
+    python3-tomli \
+    libglib2.0-dev \
+    libpixman-1-dev \
 && \
   apt-get -y autoremove \
 && \
