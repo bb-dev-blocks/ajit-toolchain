@@ -2,6 +2,8 @@
 ! BLOCK START: mmu_and_page_table_waits
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+% if confObj.target.enable_mmu:
+
 AFTER_PTABLE_SETUP:
   !  threads (0,0), (1,0), ... come here, and check if PT_FLAG is set.
   set PT_FLAG, %l6
@@ -55,6 +57,16 @@ ODD_THREAD_WAIT_ON_PTABLE_SETUP:
   ! Enable the MMU for odd threads.
   set 0x1, %o0
   sta %o0, [%g0] 0x4
+
+% else:
+
+! qemu-ajit: stay on the physical map. Do not enable the MMU.
+AFTER_PTABLE_SETUP:
+WAIT_UNTIL_MMU_IS_ENABLED:
+  ba CORTOS_START_THREADS
+  nop
+
+% end
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! BLOCK END  : mmu_and_page_table_waits

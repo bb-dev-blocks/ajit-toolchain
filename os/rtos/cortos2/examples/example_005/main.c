@@ -36,6 +36,7 @@ void main() {
 
   sum += (uint32_t)sumd;
 
+  CORTOS_DEBUG("005 sum %u", sum);
   cortos_exit(sum); // sum must be zero
 }
 

@@ -33,7 +33,8 @@ void cpuDcacheAccess (int core_id,
 	while(1)
 	{
 		lock_cache(dcache);
-		if(!dcache->lock_flag || (dcache->lock_core_id == core_id))
+		if(!dcache->lock_flag ||
+				((dcache->lock_core_id == core_id) && (dcache->lock_cpu_id == cpu_id)))
 			break;
 		unlock_cache(dcache);
 		usleep (1000);
@@ -77,8 +78,9 @@ void cpuDcacheAccess (int core_id,
 			dcache->number_of_locked_accesses++;	
 		dcache->lock_flag = 1;
 		dcache->lock_core_id = core_id;
+		dcache->lock_cpu_id = cpu_id;
 	}
-	else
+	else if((dcache->lock_core_id == core_id) && (dcache->lock_cpu_id == cpu_id))
 	{
 		dcache->lock_flag = 0;
 	}

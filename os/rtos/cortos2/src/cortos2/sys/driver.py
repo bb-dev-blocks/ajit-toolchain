@@ -8,10 +8,12 @@ This is invoked by main.py and the test routines.
 """
 
 import argparse
+import os
 
 from cortos2.common import consts, util
 from cortos2.sys.config import config
 from cortos2.sys.gen import build
+from cortos2.sys import qemu, targets
 from cortos2.common.util import FileNameT
 from cortos2.common import bottle as btl
 
@@ -60,11 +62,22 @@ def buildProject(args: argparse.Namespace) -> None:
   It creates a configuration object and starts the build process
   which uses the object.
   """
+  target = targets.by_name(args.target)
   configFileName = args.configFileName
-  confObj = config.readYamlConfig(configFileName)
+  confObj = config.readYamlConfig(configFileName, target)
   confObj.software.build.setDebugParameter(args.debug, args.port)
   confObj.software.build.setOptLevel(args.O0, args.O1, args.O2)
   build.buildProject(confObj)
+
+
+def runProject(args: argparse.Namespace) -> None:
+  """Run a built project on qemu-ajit. C-model still uses ./run.sh."""
+  target = targets.by_name(args.target)
+  if target.name != targets.QEMU.name:
+    print("CoRTOS: ERROR: cortos2 run supports --target qemu only."
+          " Use ./run.sh for the C-model.")
+    raise SystemExit(1)
+  qemu.run_qemu(os.getcwd(), timeout_sec=args.timeout)
 
 
 def getParser() -> argparse.ArgumentParser:
@@ -88,10 +101,26 @@ def getParser() -> argparse.ArgumentParser:
                       help="Optimization level 1 (O1).")
   subpar.add_argument('-O2', '--O2', action='store_true', default=False,
                       help="Optimization level 2 (O2).")
+  subpar.add_argument(
+      '--target',
+      choices=sorted(targets.BY_NAME.keys()),
+      default=targets.CMODEL.name,
+      help="cmodel (default) or qemu.")
   subpar.add_argument("configFileName",
                       nargs="?",
                       default=consts.CONFIG_FILE_DEFAULT_NAME,
                       help=f"{consts.CONFIG_FILE_DEFAULT_NAME} file path.")
+
+  # subcommand: run
+  subpar = subParser.add_parser("run", help="Run a built project on qemu-ajit.")
+  subpar.set_defaults(func=runProject)
+  subpar.add_argument(
+      '--target',
+      choices=sorted(targets.BY_NAME.keys()),
+      default=targets.QEMU.name,
+      help="qemu (default). C-model still uses ./run.sh.")
+  subpar.add_argument('--timeout', type=int, default=qemu.DEFAULT_TIMEOUT_SEC,
+                      help="Wall seconds before killing qemu.")
 
   # subcommand: print
   subpar = subParser.add_parser("show", help="Show a specific detail")

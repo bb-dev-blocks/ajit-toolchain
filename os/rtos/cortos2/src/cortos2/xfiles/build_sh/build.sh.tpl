@@ -19,7 +19,7 @@ compileToSparcUclibc.py \
   -g \
 % end
   -o {{ confObj.software.build.optLevel }} \
-% if confObj.hardware.cpu.mmu:
+% if confObj.hardware.cpu.mmu and confObj.target.enable_mmu:
   -V ${_CORTOS_VMAP} \
   -R .. \
 % end
@@ -55,6 +55,12 @@ compileToSparcUclibc.py \
   -D AJIT \
   -U \
   {{ confObj.software.build.buildArgs }};
+
+% if not confObj.target.enable_mmu:
+# qemu -kernel jumps to ELF e_entry; compileToSparcUclibc.py passes -e main.
+_START=$(sparc-linux-nm ${_MAIN}.elf | awk '/ _start$/{print $1}')
+sparc-linux-objcopy --set-start "0x${_START}" ${_MAIN}.elf
+% end
 
 #  -s ${_AAR_MT}/asm/clear_stack_pointers.s \
 #  -s ${_AAR_MT}/asm/trap_handlers_for_rtos.s \

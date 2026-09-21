@@ -112,8 +112,8 @@ int testAndSetGlobalLock (uint8_t l, int core_id, int thread_id)
 
 	// if not locked, then go on.
 	// if locked, check if core-id matches owner.
-	if((global_lock_flag == 0) || (core_id == global_lock_owner_core))
-		//((core_id == global_lock_owner_core) && (thread_id ==global_lock_owner_thread)))
+	if((global_lock_flag == 0) ||
+			((core_id == global_lock_owner_core) && (thread_id == global_lock_owner_thread)))
 	{
 		// OK.
 		ret_val = 1;
@@ -141,8 +141,7 @@ int testAndSetGlobalLock (uint8_t l, int core_id, int thread_id)
 int clearGlobalLock (uint8_t l, int core_id, int thread_id)
 {
 	MUTEX_LOCK(lock_mutex);
-	//if((core_id == global_lock_owner_core) && (thread_id == global_lock_owner_thread))
-	if(core_id == global_lock_owner_core)
+	if((core_id == global_lock_owner_core) && (thread_id == global_lock_owner_thread))
 	{
 		if((l == 0) && global_lock_flag)
 		{

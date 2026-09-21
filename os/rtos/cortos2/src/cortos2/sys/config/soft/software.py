@@ -37,6 +37,7 @@ class Software:
       userProvidedConfig: Dict,
       hardware: Hardware,
       prevKeySeq: Opt[List] = None,
+      build_dir_name: str = None,
   ) -> 'Software':
     """Takes a user given configuration and extracts the CPU related configuration."""
 
@@ -56,7 +57,7 @@ class Software:
       prevKeySeq=prevKeySeq,
     )
 
-    projectFiles = ProjectFiles()
+    projectFiles = ProjectFiles(build_dir_name)
     projectFiles.readProjectFiles()
 
     program = Program.generateObject(

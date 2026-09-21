@@ -176,6 +176,7 @@ void initCache (WriteThroughAllocateCache* c)
 
 	c->lock_flag = 0;
 	c->lock_core_id = 0;
+	c->lock_cpu_id = 0;
 
 	// multi-context support?
 	c->multi_context = hasMultiContextMunit(c->core_id);

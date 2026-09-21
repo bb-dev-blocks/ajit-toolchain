@@ -1,5 +1,6 @@
 #include <math.h>
 #include <cortos.h>
+#include <cortos_devices.h>
 
 #include <stdint.h>
 #include <stdio.h>
@@ -26,13 +27,11 @@ void my_serial_interrupt_handler() {
 	//
 	uint32_t B = __ajit_read_serial_rx_register_via_vmap__();
 
-	CORTOS_TRACE("in __serial_interrupt_handler.\n");
-
 	if(B == 'q') {
 		exit_flag = 1;
 	}
 
-	CORTOS_TRACE("Received %c, exit flag = %d\n", B, exit_flag);
+	CORTOS_DEBUG("310 rx %c exit %d\n", B, exit_flag);
 
 	__ajit_serial_putchar_via_vmap__(B);
 
@@ -50,11 +49,10 @@ int main ()
 
 	// enableInterruptControllerAndAllInterrupts(0,0);
 
-	// __cortos_enable_serial_interrupt();
-	CORTOS_DEBUG("Enabled serial.\n");
-
+	// RX interrupt must be on before the host sends 'q'.
+	__cortos_enable_serial_interrupt();
 	enableInterruptControllerAndAllInterrupts(0,0);
-
+	CORTOS_DEBUG("Enabled serial.\n");
 
 	while(1) {
 		add_delay();

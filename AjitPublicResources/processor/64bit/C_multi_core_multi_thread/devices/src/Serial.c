@@ -597,7 +597,10 @@ void Serial_Rx(void* vst)
 			st->Rx_STATE = RX_DATA_RECEIVED;
 			st->Rx_full=1;
 			st->Rx_buffer=rx_data;
-
+			/* Sample the enable bit after the byte arrives. The value
+			   taken before read_uint8 is stale if the CPU enables the
+			   interrupt while this thread is blocked on the pipe. */
+			rx_interrupt_enable = st->Rx_interrupt_enable;
 
 			//If Rx_interrupt_enable=1, we interrupt the cpu.
 			if(rx_interrupt_enable && (st->device_id == 0))

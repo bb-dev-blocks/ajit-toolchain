@@ -20,7 +20,7 @@ uint8_t* bgetNcramLockAddr = 0;
 void __cortos_bpool() {
   if (bgetLockAddr == 0) {
 
-    bpool({{ startAddr }}, {{ memSizeInBytes }});
+    bpool((void *){{ hex(startAddr) }}u, {{ memSizeInBytes }}u);
 
     // allocate lock
     uint8_t* lockStartAddrNc = (uint8_t*){{ confObj.software.locks.locksStartAddr }}; // non-cacheable
@@ -59,7 +59,7 @@ void cortos_brel(void *buf) {
 
 void __cortos_bpool_ncram() {
   if (bgetNcramLockAddr == 0) {
-    bpool_ncram({{ startAddrNcram }}, {{ memSizeInBytesNcram }});
+    bpool_ncram((void *){{ hex(startAddrNcram) }}u, {{ memSizeInBytesNcram }}u);
 
     // allocate lock
     uint8_t* lockStartAddrNc = (uint8_t*){{ confObj.software.locks.locksStartAddr }}; // non-cacheable

@@ -104,13 +104,15 @@ class MemoryRegion(util.PrettyStr):
         pageSizeInBytes = consts.PAGE_TABLE_LEVELS_TO_PAGE_SIZE[level]
         if firstAddress % pageSizeInBytes == 0:
           ratio = sizeInBytes / pageSizeInBytes
+          if ratio >= 1:
+            numOfPages = int(ratio)
+            break
           if ratio >= 0.9:
             numOfPages = 1
-            if ratio < 1:
-              self.unusedSizeInBytes = int(pageSizeInBytes * (1 - ratio))
+            self.unusedSizeInBytes = int(pageSizeInBytes * (1 - ratio))
             break
           continue
-      assert(numOfPages == 1 and pageSizeInBytes, f"{self.name}: {numOfPages}, {pageSizeInBytes}")
+      assert numOfPages >= 1 and pageSizeInBytes, f"{self.name}: {numOfPages}, {pageSizeInBytes}"
       if firstPageSizeInBytes is None:
         firstPageSizeInBytes = pageSizeInBytes if numOfPages else None
       self.pageTableLevels.append((level, numOfPages))

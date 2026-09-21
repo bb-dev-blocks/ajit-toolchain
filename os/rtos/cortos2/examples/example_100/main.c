@@ -31,6 +31,7 @@ void cortos_entry_func_001() {
   }
   CORTOS_DEBUG("001 done: %d", global_var);
   while(global_var != MAX_LIMIT_X2);
+  CORTOS_INFO("100 thread 0 final %d", global_var);
   cortos_exit(global_var); // safely exit
 }
 
@@ -49,6 +50,7 @@ void cortos_entry_func_101() {
   }
   CORTOS_DEBUG("101 done: %d", global_var);
   while(global_var != MAX_LIMIT_X2);
+  CORTOS_INFO("100 thread 1 final %d", global_var);
   cortos_exit(global_var); // safely exit
 }
 

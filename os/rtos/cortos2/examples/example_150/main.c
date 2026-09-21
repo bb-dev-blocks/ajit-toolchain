@@ -36,6 +36,7 @@ void cortos_entry_func_001() {
     totalSent += sentCount;
   }
 
+  CORTOS_INFO("150 sender sent %u", totalSent);
   cortos_exit(totalSent);
 }
 
@@ -66,6 +67,7 @@ void cortos_entry_func_101() {
     sum += msgs[i];
   }
 
+  CORTOS_INFO("150 receiver sum %u", sum);
   cortos_exit(sum);
 }
 

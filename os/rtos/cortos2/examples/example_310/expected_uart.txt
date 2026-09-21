@@ -1,0 +1,3 @@
+Enabled serial.
+310 rx q exit 1
+BYE(1)

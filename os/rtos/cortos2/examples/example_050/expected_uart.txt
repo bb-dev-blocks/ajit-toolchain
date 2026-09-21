@@ -1,0 +1,2 @@
+050 thread 0,0
+050 thread 0,1

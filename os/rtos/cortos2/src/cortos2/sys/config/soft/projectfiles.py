@@ -9,10 +9,13 @@ from cortos2.common import consts
 class ProjectFiles:
   """Maintains information about important files and directories of the user project."""
 
-  def __init__(self):
+  def __init__(self, build_dir_name: str = None):
     self.rootDir = os.getcwd()
 
-    self.buildDir = osp.join(self.rootDir, consts.CORTOS_BUILD_DIR_NAME)
+    self.buildDir = osp.join(
+      self.rootDir,
+      build_dir_name or consts.CORTOS_BUILD_DIR_NAME,
+    )
     self.cortosSrcDir = osp.join(self.buildDir, consts.CORTOS_SRC_DIR_NAME)
 
     self.elfFileName: str = f"{self.buildDir}/main.elf"

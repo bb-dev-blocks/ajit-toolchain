@@ -88,6 +88,7 @@ typedef struct _WriteThroughAllocateCache {
 
 	uint8_t  lock_flag;
 	uint8_t  lock_core_id;
+	uint8_t  lock_cpu_id;
 
 	uint8_t multi_context;
 

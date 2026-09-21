@@ -41,10 +41,10 @@ int cortos_vprintf(const char* fmt, va_list args);
 // the value...   Returns the number of elapsed ticks
 // where one tick is 256 clock cycles.
 //   (Thus, if the clock is 100MHz, 1 tick is 2.56 micro-seconds).
-inline uint64_t cortos_get_clock_time();
+uint64_t cortos_get_clock_time();
 
 // sleep for specified number of clock cycles
-inline void cortos_sleep(uint32_t clock_cycles);
+void cortos_sleep(uint32_t clock_cycles);
 
 // Returns the thread id of the system.
 // 0 for Thread 00

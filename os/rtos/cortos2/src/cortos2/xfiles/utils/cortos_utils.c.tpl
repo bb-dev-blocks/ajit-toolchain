@@ -3,6 +3,7 @@
 
 #include <cortos_utils.h>
 #include <cortos_locks.h>
+#include <cortos_devices.h>
 #include "ajit_access_routines.h"
 
 #include "core_portme.h"
@@ -12,17 +13,18 @@
 uint8_t* printingLockAddr = 0;
 
 void cortos_init_printing() {
+  __cortos_enable_serial();
   // allocate lock
   uint8_t* lockStartAddrNc = (uint8_t*){{ confObj.software.locks.locksStartAddr }}; // non-cacheable
   allocatedLocksNc[PRINTING_LOCK_INDEX] = 1;
   printingLockAddr = lockStartAddrNc + PRINTING_LOCK_INDEX;
 }
 
-inline uint64_t cortos_get_clock_time() {
+uint64_t cortos_get_clock_time() {
   return __ajit_get_clock_time();
 }
 
-inline void __attribute__((optimize("O0"))) cortos_sleep(uint32_t clock_cycles) {
+void __attribute__((optimize("O0"))) cortos_sleep(uint32_t clock_cycles) {
   __ajit_sleep__(clock_cycles);
 }
 

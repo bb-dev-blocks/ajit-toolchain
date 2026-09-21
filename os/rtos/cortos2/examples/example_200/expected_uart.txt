@@ -1,0 +1,2 @@
+Thread 0,0 finished! (15, 240).
+Thread 0,1 finished! (15, 240).

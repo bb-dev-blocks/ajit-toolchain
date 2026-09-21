@@ -36,13 +36,15 @@ CORTOS_SETUP_THREADS:
   call __cortos_init_region_to_zero
   nop
 
+% if confObj.target.enable_mmu:
   !
   ! set up virtual -> physical map.
-  !  In this example, the same VA -> PA translation is used by all
-  !  threads.  The page table is set up by thread (0,0).
+  !  The same VA -> PA translation is used by all threads.
+  !  The page table is set up by thread (0,0).
   !
   call page_table_setup
   nop
+% end
 
   !
   !  set *PT_FLAG = 1.   This indicates that the page table has been written.
@@ -52,6 +54,7 @@ CORTOS_SETUP_THREADS:
   mov 1, %l7
   st %l7, [%l6]
 
+% if confObj.target.enable_mmu:
   ! block start: setup the mmu
   call set_context_table_pointer
   nop
@@ -60,6 +63,7 @@ CORTOS_SETUP_THREADS:
   set 0x1, %o0
   sta %o0, [%g0] 0x4
   ! block end  : setup the mmu
+% end
 
   call cortos_init_locks
   nop
