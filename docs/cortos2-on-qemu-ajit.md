@@ -77,6 +77,10 @@ cd os/rtos/cortos2/examples/tflite/kernels/conv
 # person_detection: qemu only (1 test, timeout 300s)
 cd os/rtos/cortos2/examples/tflite/person_detection
 ./build_qemu.sh && ./run_qemu.sh
+
+# resnet50: qemu only (timeout 700s). See docs/tflite-micro/resnet50-cortos2.md
+cd os/rtos/cortos2/examples/tflite/resnet50
+./build_qemu.sh && ./run_qemu.sh
 ```
 
 `micro_speech`, the kernels, and `person_detection` have no C-model scripts. `hello_world` uses a 256KB stack; 64KB faulted the C-model stack guard. Leftover C-model: `pkill -x ajit_C_system_m`. Leftover qemu: `pkill -f qemu-system-sparc`.
@@ -122,5 +126,6 @@ The linker keeps those arrays inside `.rodata`, and `ALIGN(4)` before the arrays
 | `kernels/dequantize` | skip | pass | 3 tests |
 | `kernels/reduce` | skip | pass | 44 tests |
 | `person_detection` | skip | pass | 1 test. RAM 8MB. |
+| `resnet50` | skip | pass | hopper `top1: 457 bow tie`. RAM 128MB. Timeout 700s. |
 
-Kernel and `person_detection` projects use RAM 8MB, stack 256KB, and `tflite_cortos_start`. C-model is not run.
+Kernel and `person_detection` projects use RAM 8MB, stack 256KB, and `tflite_cortos_start`. C-model is not run. `resnet50` uses `main`, RAM 128MB, and a 700s qemu cap. Runbook: [tflite-micro/resnet50-cortos2.md](tflite-micro/resnet50-cortos2.md).

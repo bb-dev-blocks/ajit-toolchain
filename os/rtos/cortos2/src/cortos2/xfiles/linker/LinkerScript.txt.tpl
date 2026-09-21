@@ -41,5 +41,7 @@ SECTIONS
   .data   ALIGN(8) : { * (.data) * (.data.*)}
 
   . = {{ hex(confObj.software.program.getBssRegionStartAddr()) }};
-  .bss   ALIGN(8) : { * (.bss) }
+  /* .bss.* comes from -fdata-sections. Keep it in this output section so
+     the measured .bss size includes large objects such as the tensor arena. */
+  .bss   ALIGN(8) : { * (.bss) * (.bss.*) }
 }
