@@ -5,12 +5,15 @@
 """
 Read user configuration file.
 """
+import os
+import os.path as osp
 from typing import Optional as Opt
 import yaml
 
 import cortos2.common.util as util
 
 # Yaml key names
+from cortos2.common import consts
 from cortos2.sys.config.hard.hardware import Hardware
 from cortos2.sys.config.soft import bget, build, lock, queue, projectfiles, program
 from cortos2.sys.config.hard import memory, processor
@@ -26,13 +29,22 @@ class SystemConfig:
     self.userProvidedConfig = userProvidedConfig
     self.target = target if target is not None else targets.CMODEL
     self.hardware = Hardware.generateObject(userProvidedConfig)
-    # qemu-ajit RAM starts at 0x00100000. Keep the yaml size; move the base.
-    # NCRAM has no separate qemu window, so pack it at the top of that RAM.
+    # qemu-ajit RAM starts at 0x00100000. Move the base. Widen a short
+    # yaml RAM when NCRAM does not fit (see QEMU_GUEST_RAM_MIB).
     if not self.target.enable_mmu:
       base = self.target.default_ram_start
       ram = self.hardware.memory.ram
       ram.virtualStartAddr = base
       ram.physicalStartAddr = base
+      # qemu-ajit -m is 128MiB. A yaml RAM smaller than its NCRAM cannot
+      # pack those regions; widen to the guest window. C-model is unchanged.
+      guest = consts.QEMU_GUEST_RAM_MIB * 1024 * 1024
+      ncram_bytes = sum(
+          region.sizeInBytes for region in self.hardware.memory.ncram
+          if region.sizeInBytes > 0)
+      if ncram_bytes > ram.sizeInBytes and ram.sizeInBytes < guest:
+        ram.sizeInBytes = guest
+        ram.initPageTableLevels()
       cursor = base + ram.sizeInBytes
       for region in reversed(self.hardware.memory.ncram):
         size = region.sizeInBytes
@@ -53,6 +65,20 @@ class SystemConfig:
       prevKeySeq=[],
       build_dir_name=self.target.build_dir_name,
     )
+
+    home = os.environ.get("AJIT_HOME", "")
+
+    def ajit_path(p: str) -> str:
+      if osp.isabs(p):
+        return p
+      return osp.join(home, p) if home else p
+
+    self.software.extraCc = [
+        ajit_path(p) for p in (userProvidedConfig.get("ExtraCc") or [])]
+    self.software.extraIncludes = [
+        ajit_path(p) for p in (userProvidedConfig.get("ExtraIncludes") or [])]
+    self.software.extraLibDirs = [
+        ajit_path(p) for p in (userProvidedConfig.get("ExtraLibDirs") or [])]
 
     self.memoryLayout: MemoryLayout = MemoryLayout(self.hardware.memory)
 

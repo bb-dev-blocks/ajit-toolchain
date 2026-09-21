@@ -54,7 +54,7 @@ def _smp_and_mem_mib(project_dir: str) -> Tuple[int, int]:
     cores = int(proc.get("Cores") or 1)
     tpc = int(proc.get("ThreadsPerCore") or 1)
   smp = max(1, min(cores * tpc, 4))
-  return smp, 128
+  return smp, consts.QEMU_GUEST_RAM_MIB
 
 
 def run_qemu(

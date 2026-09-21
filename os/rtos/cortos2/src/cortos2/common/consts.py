@@ -81,6 +81,7 @@ INIT_BUILD_DIR_NAME: str = "build_init"
 FINAL_BUILD_DIR_NAME: str = "build_final"
 CORTOS_BUILD_DIR_NAME: str = "cortos_build"
 CORTOS_BUILD_QEMU_DIR_NAME: str = "cortos_build_qemu"
+QEMU_GUEST_RAM_MIB = 128
 CORTOS_SRC_DIR_NAME: str = "cortos_src"
 
 

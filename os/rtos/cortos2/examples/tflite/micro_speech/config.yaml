@@ -1,0 +1,87 @@
+Hardware:
+  Processor:
+    Cores: 1
+    ThreadsPerCore: 1
+    ISA: 32
+    MMU: Yes
+    FPU: No
+
+  Memory:
+    MaxPhysicalAddrBitWidth: 36
+    Flash:
+      StartAddr: 0x0
+      SizeInMegaBytes: 16
+      Permissions: RXC
+    RAM:
+      StartAddr: 0x40000000
+      SizeInMegaBytes: 8
+      Permissions: RWXC
+    MMIO:
+      StartAddr: 0xFFFF0000
+      EndAddr: 0xFFFFFFFF
+      Permissions: RW
+
+  Devices:
+    - Name: Timer
+      MemoryRegion:
+        StartAddr: 0xFFFF3100
+        SizeInBytes: 256
+        Permissions: RW
+      NamedRegisters:
+        Control: 0xFFFF3100
+    - Name: InterruptController
+      MemoryRegion:
+        StartAddr: 0xFFFF3000
+        SizeInBytes: 32
+        Permissions: RW
+      NamedRegisters:
+        Control: 0xFFFF3000
+    - Name: Serial
+      MemoryRegion:
+        StartAddr: 0xFFFF3200
+        SizeInBytes: 64
+        Permissions: RW
+      NamedRegisters:
+        Control: 0xFFFF3200
+        TX: 0xFFFF3204
+        RX: 0xFFFF3208
+    - Name: ScratchArea
+      MemoryRegion:
+        StartAddr: 0xFFFF2C00
+        SizeInBytes: 1024
+        Permissions: RW
+
+Software:
+  BuildAndExecute:
+    LogLevel: NONE
+    OptimizationLevel: 2
+    Debug: No
+  ProgramThreads:
+    - CortosInitCalls:
+        - tflite_cortos_start
+      StackSize:
+        SizeInKiloBytes: 256
+
+ExtraCc:
+  - tflite-micro/tensorflow/lite/micro/examples/micro_speech/micro_speech_test.cc
+  - tflite-micro/gen/ajit_sparc_default_gcc/genfiles/tensorflow/lite/micro/examples/micro_speech/models/micro_speech_quantized_model_data.cc
+  - tflite-micro/gen/ajit_sparc_default_gcc/genfiles/tensorflow/lite/micro/examples/micro_speech/models/audio_preprocessor_int8_model_data.cc
+  - tflite-micro/gen/ajit_sparc_default_gcc/genfiles/tensorflow/lite/micro/examples/micro_speech/testdata/no_1000ms_audio_data.cc
+  - tflite-micro/gen/ajit_sparc_default_gcc/genfiles/tensorflow/lite/micro/examples/micro_speech/testdata/yes_1000ms_audio_data.cc
+  - tflite-micro/gen/ajit_sparc_default_gcc/genfiles/tensorflow/lite/micro/examples/micro_speech/testdata/silence_1000ms_audio_data.cc
+  - tflite-micro/gen/ajit_sparc_default_gcc/genfiles/tensorflow/lite/micro/examples/micro_speech/testdata/noise_1000ms_audio_data.cc
+  - tflite-micro/gen/ajit_sparc_default_gcc/genfiles/tensorflow/lite/micro/examples/micro_speech/testdata/no_30ms_audio_data.cc
+  - tflite-micro/gen/ajit_sparc_default_gcc/genfiles/tensorflow/lite/micro/examples/micro_speech/testdata/yes_30ms_audio_data.cc
+  - os/rtos/cortos2/examples/tflite/cxxstub.cc
+
+ExtraIncludes:
+  - tflite-micro
+  - tflite-micro/gen/ajit_sparc_default_gcc/genfiles
+  - tflite-micro/tensorflow/lite/micro/tools/make/downloads
+  - tflite-micro/tensorflow/lite/micro/tools/make/downloads/gemmlowp
+  - tflite-micro/tensorflow/lite/micro/tools/make/downloads/flatbuffers/include
+  - tflite-micro/tensorflow/lite/micro/tools/make/downloads/kissfft
+  - tflite-micro/tensorflow/lite/micro/tools/make/downloads/ruy
+
+ExtraLibDirs:
+  - tflite-micro/gen/ajit_sparc_default_gcc/lib

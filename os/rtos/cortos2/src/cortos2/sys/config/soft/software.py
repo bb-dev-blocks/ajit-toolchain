@@ -31,6 +31,9 @@ class Software:
     # self.queueSeq = queueSeq
     self.traps = traps
     self.startup = startup
+    self.extraCc: List[str] = []
+    self.extraIncludes: List[str] = []
+    self.extraLibDirs: List[str] = []
 
   @staticmethod
   def generateObject(

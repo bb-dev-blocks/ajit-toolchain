@@ -11,6 +11,8 @@ QEMU machine, RAM, and UART maps: [cortos-on-qemu-ajit.md](cortos-on-qemu-ajit.m
 
 This is **not** Linux qemu-user (`TARGET=sparc_generic` in the TFLM fork). That path is a different ABI and is not a pass gate for qemu-ajit.
 
+cortos2 is a separate tree. How to run those examples: [cortos2-on-qemu-ajit.md](cortos2-on-qemu-ajit.md#tflite-micro).
+
 ## Fundamentals
 
 TFLM is an **interpreter**, not an ahead-of-time compiler of the graph. A typical test:
@@ -23,7 +25,7 @@ TFLM is an **interpreter**, not an ahead-of-time compiler of the graph. A typica
 
 On AJIT:
 
-- CPU is **SPARC V8, 32-bit, big-endian**. Multi-byte weights in flatbuffers are byte-swapped into the arena (fork already does this).
+- CPU is **SPARC V8, 32-bit, big-endian**. Multi-byte weights in flatbuffers are byte-swapped into the arena (fork already does this). **Unaligned `int64`/`double` vector reads trap**; TFLM `flatbuffers.patch` uses `memcpy` in `ReadScalar` / `IndirectHelper::Read`.
 - Firmware is **uClibc** `sparc-linux-g++` from Buildroot, **static**, **`-fno-pic -fno-pie`**. Default PIC left GOT relocs that zeroed TBR/stack after link.
 - **RAM** for qemu-ajit programs starts at **`0x00100000`** (PROM uses the first 1MiB).
 - **UART** for test text: control `0xFFFF3200`, TX `0xFFFF3204` (busy bit 8). TFLM `DebugLog` writes that MMIO. CoRTOS `printf` is a different path; these tests do not rely on it.
@@ -132,7 +134,7 @@ hello_world passes. micro_speech is a **skip** (C-model stays at full CPU withou
 | `kernels/activations` | pass | pass | — | |
 | `kernels/mul` | pass | pass | — | |
 | `person_detection` | pass | pass | — | generated `.tflite` + `.bmp` arrays |
-| `resnet50` | — | pending | skip | Qualcomm AI Hub TFLITE w8a8 ResNet-50; CoRTOS qemu only. Runbook: [tflite-micro/resnet50.md](tflite-micro/resnet50.md). Recipe for other models: [tflite-micro/README.md](tflite-micro/README.md). |
+| `resnet50` | — | pass | skip | Qualcomm AI Hub TFLITE w8a8; CoRTOS qemu hopper top-1 `457 bow tie`. Fetch: https://huggingface.co/qualcomm/ResNet50 (TFLITE w8a8 only). Runbook: [tflite-micro/resnet50.md](tflite-micro/resnet50.md). |
 
 Kernel names: `conv`, `depthwise_conv`, `fully_connected`, `softmax`, `add`, `pooling`, `pad`, `activations`, `mul`.
 
@@ -152,7 +154,7 @@ cd os/rtos/cortos/examples/tflite/person_detection
 
 cd os/rtos/cortos/examples/tflite/resnet50
 ./fetch.sh && ./host_precheck.py
-./build_qemu.sh && ./run_qemu.sh    # timeout 1800s; INPUT=<name>
+./build_qemu.sh && ./run_qemu.sh    # timeout 600s; INPUT=<name>
 ```
 
 Regression (must stay green): `cd os/rtos/cortos/examples/example_001 && ./build_qemu.sh && ./run_qemu.sh`.

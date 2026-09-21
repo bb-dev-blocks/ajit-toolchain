@@ -1,0 +1,2 @@
+[==========] 6 tests ran.
+~~~ALL TESTS PASSED~~~

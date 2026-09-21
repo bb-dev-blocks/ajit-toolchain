@@ -14,6 +14,15 @@ _AAR_MT="$AJIT_ACCESS_ROUTINES_MT";
 _AAR="$AJIT_ACCESS_ROUTINES";
 _IEEE_SOFT_FLOAT_LIB="$AJIT_HOME/application_development/soft_float/ieeelib/"
 # {{ confObj.software.build.debug }}
+% if confObj.software.extraCc:
+_TFLITE_CXXFLAGS="-S -fno-pic -fno-pie -m32 -mcpu=v8 -std=c++17 -fno-rtti -fno-exceptions -fno-threadsafe-statics -fno-use-cxa-atexit -fpermissive -fno-builtin-printf -funsigned-char -fno-delete-null-pointer-checks -fomit-frame-pointer -ffunction-sections -fdata-sections -DTF_LITE_STATIC_MEMORY -DTF_LITE_DISABLE_X86_NEON -DTF_LITE_MCU_DEBUG_LOG -DTF_LITE_USE_GLOBAL_CMATH_FUNCTIONS -DTF_LITE_USE_GLOBAL_MIN -DTF_LITE_USE_GLOBAL_MAX -I${AJIT_UCLIBC_HEADERS_DIR}"
+% for inc in confObj.software.extraIncludes:
+_TFLITE_CXXFLAGS="${_TFLITE_CXXFLAGS} -I {{inc}}"
+% end
+% for i, cc in enumerate(confObj.software.extraCc):
+sparc-linux-g++ ${_TFLITE_CXXFLAGS} "{{cc}}" -o extra_cc_{{i}}.s
+% end
+% end
 compileToSparcUclibc.py \
 % if confObj.software.build.debug:
   -g \
@@ -34,7 +43,13 @@ compileToSparcUclibc.py \
   -S ${_CORTOS_SRC_DIR} \
   -C .. \
   -C ${_CORTOS_SRC_DIR} \
+% for i, cc in enumerate(confObj.software.extraCc):
+  -s extra_cc_{{i}}.s \
+% end
   -l .. \
+% for d in confObj.software.extraLibDirs:
+  -l {{d}} \
+% end
   -N ${_MAIN} \
   -L ${_LINKER_SCRIPT} \
 % if confObj.software.build.useLibAjit:
