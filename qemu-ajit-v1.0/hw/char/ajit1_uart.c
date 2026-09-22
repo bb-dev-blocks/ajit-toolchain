@@ -114,7 +114,13 @@ static uint64_t ajit1_uart_read(void *opaque, hwaddr addr, unsigned size)
     /* when only one byte read */
     case AJIT1_UART_RX_DATA_OFFSET + 3:
         val = ajit1_uart_pop(uart);
-        uart->control &= ~AJIT1_UART_RX_FULL;
+        /* Keep RX_FULL set while the FIFO still holds bytes so the guest
+         * can drain a multi-byte receive in one interrupt.
+         */
+        if (uart->len == 0)
+            uart->control &= ~AJIT1_UART_RX_FULL;
+        else
+            uart->control |= AJIT1_UART_RX_FULL;
         break;
 
     case AJIT1_UART_CONTROL_OFFSET:

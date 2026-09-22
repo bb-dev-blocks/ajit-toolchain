@@ -6,3 +6,10 @@
 	path = tflite-micro
 	url = git@github.com:bb-dev-blocks/tflite-micro.git
 	branch = sparc-ajit
+[submodule "nuttx"]
+	path = nuttx
+	url = git@github.com:bb-dev-blocks/nuttx.git
+	branch = ajit_main
+[submodule "apps"]
+	path = apps
+	url = https://github.com/apache/nuttx-apps.git
