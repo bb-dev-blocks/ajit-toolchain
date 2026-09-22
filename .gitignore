@@ -20,6 +20,13 @@ bin/
 *.dylib
 *.dll
 !/ahir_release/**/*.so
+# Rebuilt for the host by scripts/install_ahir_c_libs.sh
+/ahir_release/lib/libPipeHandler.so
+/ahir_release/lib/libPipeHandlerDebugPthreads.so
+/ahir_release/lib/libSockPipes.so
+/ahir_release/functionLibrary/lib/libfpu.so
+/ahir_release/functionLibrary/lib/libtimer.so
+/ahir_release/functionLibrary/lib/libllvm_intrinsics.so
 
 # Fortran module files
 *.mod
@@ -82,4 +89,7 @@ obj_temp/
 
 # qemu-ajit in-tree configure leftovers (canonical build is $AJIT_HOME/build/qemu-ajit-v1.0)
 qemu-ajit-v1.0/build/
+
+# Local files copied into the tflite image at /tflite/inputs/
+/tflite-inputs/
 

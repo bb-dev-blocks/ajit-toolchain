@@ -41,6 +41,8 @@ In each example_XXX project directory do the following,
     ./build_qemu.sh  # qemu-ajit image in cortos_build_qemu/
     ./run_qemu.sh    # headless qemu; see docs/cortos-on-qemu-ajit.md
 
+TFLite Micro (bare-metal and CoRTOS on qemu-ajit): `tflite/` and `docs/tflite-on-qemu-ajit.md`.
+
 
 ## How a cortos project is built?
 

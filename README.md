@@ -1,6 +1,6 @@
 README
 =============
-**Current Docker path (Apple Silicon):** Ubuntu **24.04**, SPARC V8 32-bit uClibc from **Buildroot 2025.02.18** (gcc 13.4.0), CoRTOS on the C simulator and (separately) qemu-ajit. C-model setup: `docs/m3-ubuntu24-buildroot2025-arm64mac.md`. QEMU: `docs/cortos-on-qemu-ajit.md`.
+**Current Docker path (Apple Silicon):** Ubuntu **24.04**, SPARC V8 32-bit uClibc from **Buildroot 2025.02.18** (gcc 13.4.0), CoRTOS on the C simulator and (separately) qemu-ajit. C-model setup: `docs/m3-ubuntu24-buildroot2025-arm64mac.md`. QEMU: `docs/cortos-on-qemu-ajit.md`. TFLite Micro on qemu-ajit (bare-metal and CoRTOS): `docs/tflite-on-qemu-ajit.md`.
 
 The notes below still describe an older Ubuntu 16.04 / Buildroot 2014.08 local layout. Prefer the M3 doc for Docker on arm64.
 

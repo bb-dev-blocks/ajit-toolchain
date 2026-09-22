@@ -31,10 +31,10 @@ All product edits live in `repos/ajit-toolchain`. Nested AHIR must be **inside**
 | Piece | Path |
 |---|---|
 | Toolchain | `repos/ajit-toolchain` (this milestone’s commit on `marshal_updates`) |
-| AHIR | `repos/ajit-toolchain/ahir` @ `0816fb6d533715d89364551c267642df701b391c` (`git@github.com:bb-dev-blocks/ahir.git`). Keep the gitlink on this sha, not `master`. |
+| AHIR | `repos/ajit-toolchain/ahir` @ `88e85c987bfb8a1eaf6d415bbbd1fe625dde764f` (`git@github.com:bb-dev-blocks/ahir.git`). Keep the gitlink on this sha, not `master`. |
 | Buildroot wrappers | `repos/ajit-toolchain/buildroot_src_2025.02/` (`setup.sh`, `pathsetup.sh`, `ajit_sparc32_uclibc_defconfig`, vendored `buildroot-2025.02.18/`) |
 | Parent tarball | `buildroot-2025.02.18.tar.gz` at aparajit root — **extract source only**, do not commit it |
-| Vendored x86 drop | `repos/ajit-toolchain/ahir_release/` — leave the committed x86 `.so` in git. Rebuild host libs at setup; do not commit arm64 overlays. |
+| AHIR release | `repos/ajit-toolchain/ahir_release/` — seven host C libraries are gitignored and rebuilt by `scripts/install_ahir_c_libs.sh` (`libPipeHandler.so`, `libPipeHandlerDebugPthreads.so`, `libSockPipes.so`, `libBitVectors.a`, `libfpu.so`, `libtimer.so`, `libllvm_intrinsics.so`). Other shared libraries stay as the vendored x86 drop. |
 
 If the vendored Buildroot tree is missing (fresh clone without that directory):
 
@@ -135,15 +135,13 @@ Python ≥3.10 cannot import vendored `pyelftools-0.25` (`collections.MutableMap
 
 ### AHIR C libs (required on arm64)
 
-Same as M1: vendored `ahir_release/lib/*.so` are x86-64.
+The seven host C libraries are not in git. Other `ahir_release` shared libraries are still the vendored x86-64 drop.
 
 ```bash
 bash "$AJIT_HOME/scripts/install_ahir_c_libs.sh"
 file "$AHIR_RELEASE/lib/libPipeHandlerDebugPthreads.so"
 # ELF 64-bit LSB shared object, ARM aarch64
 ```
-
-Do not commit those overlays.
 
 ### antlr3c / C-model
 
@@ -184,7 +182,7 @@ Numbered examples do not wait on stdin.
 
 - `--platform linux/amd64` on Apple Silicon.
 - `getent group docker` / `chown …:docker` on Darwin.
-- Commit rebuilt arm64 `ahir_release/**/*.so` (or `.a`) over the x86 drop.
+- Commit the seven host C libraries that `scripts/install_ahir_c_libs.sh` writes, or replace the remaining vendored x86 `ahir_release` libraries with arm64 rebuilds.
 - Commit `buildroot-2025.02.18.tar.gz` or `$AJIT_HOME/build/` / Docker layer caches.
 - Point `PATH` at `build/buildroot-2014.08` for this milestone.
 
