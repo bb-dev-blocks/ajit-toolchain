@@ -37,6 +37,17 @@ Pass: exit 0, and every non-comment line of `expected_uart.txt` appears on the U
 
 C-model is not a gate. Coverage row: [`cortos2-on-qemu-ajit.md`](../cortos2-on-qemu-ajit.md).
 
+## C-model cycles
+
+A full C-model run of this example is not practical. One invoke executes
+322,128,699,600 instructions (exact, qemu `libinsn` + `libstoptrigger`), and
+the C-model simulates roughly 70k–700k instructions per second, so a run
+would take days. Cycles are measured per layer instead, with
+[`examples/tflite/resnet50_layers`](../../os/rtos/cortos2/examples/tflite/resnet50_layers/README.md),
+and summed over the network topology. Results and method are in aparajit
+`docs/resnet50-metrics.md`. C-model counters are explained in
+[`cortos2-cmodel-metrics.md`](../cortos2-cmodel-metrics.md).
+
 ## How the w8a8 model is made to fit
 
 The blob is Qualcomm AI Hub ResNet50 **TFLITE w8a8** (`resnet50_int8.tflite`, 26327248 bytes, sha256 `1753841ba8ce7ca250456db146d0d4c7035d9c15100ce3d2cb563cebde57eb22`). Pin and zip URL are in `model_pin.txt`. Fetch with `./fetch.sh`. Skip ONNX, DLC, and QNN from the same Hub page. The file starts with `TFL3`. Input is uint8 NHWC 1×224×224×3. Output is uint8 1×1000. Labels are the 1001-line TF list with `label_offset=1` (index 0 is the background class; the graph has 1000 classes).

@@ -38,7 +38,7 @@ cd os/rtos/cortos2/examples/example_001
 
 ## TFLite Micro
 
-Thin projects under `os/rtos/cortos2/examples/tflite/`. They link the existing `tflite-micro/gen/ajit_sparc_default_gcc/lib/libtensorflow-microlite.a` (`TARGET=ajit`). Test sources stay in the submodule. CoRTOS v1 and bare-metal runs are in [tflite-on-qemu-ajit.md](tflite-on-qemu-ajit.md).
+Thin projects under `os/rtos/cortos2/examples/tflite/`. They link the existing `tflite-micro/gen/ajit_sparc_default_gcc/lib/libtensorflow-microlite.a` (`TARGET=ajit`). Test sources stay in the submodule. CoRTOS v1 and bare-metal runs are in [tflite-on-qemu-ajit.md](tflite-on-qemu-ajit.md). Run guide for every cortos2 TFLite example on qemu and the C-model, including the ResNet-50 per-layer harness: [tflite-on-cortos2.md](tflite-on-cortos2.md).
 
 ### How to run
 
@@ -126,6 +126,7 @@ The linker keeps those arrays inside `.rodata`, and `ALIGN(4)` before the arrays
 | `kernels/dequantize` | skip | pass | 3 tests |
 | `kernels/reduce` | skip | pass | 44 tests |
 | `person_detection` | skip | pass | 1 test. RAM 8MB. |
-| `resnet50` | skip | pass | hopper `top1: 457 bow tie`. RAM 128MB. Timeout 700s. |
+| `resnet50` | skip | pass | hopper `top1: 457 bow tie`. RAM 128MB. Timeout 700s. Full C-model run takes days; see `resnet50_layers`. |
+| `resnet50_layers` | pass | pass | one ResNet-50 op per build (`LAYER=`, `ROWS=`); [README](../os/rtos/cortos2/examples/tflite/resnet50_layers/README.md). |
 
 Kernel and `person_detection` projects use RAM 8MB, stack 256KB, and `tflite_cortos_start`. C-model is not run. `resnet50` uses `main`, RAM 128MB, and a 700s qemu cap. Runbook: [tflite-micro/resnet50-cortos2.md](tflite-micro/resnet50-cortos2.md).
