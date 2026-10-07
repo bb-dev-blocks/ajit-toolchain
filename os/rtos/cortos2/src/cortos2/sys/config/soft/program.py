@@ -115,12 +115,15 @@ class Program:
 
 
   def computeBinarySize(self, elfFileName: str):
-    size_dict =  elf.getSectionSizes(elfFileName, [".text",".rodata",".data",".bss"])
+    size_dict =  elf.getSectionSizes(elfFileName, [".text",".rodata",".data",".got",".bss"])
     print(f".text section size in bytes: {size_dict['.text']}")
     self.textSectionSizeInBytes = size_dict[".text"] + consts.TEXT_SIZE_BUFFER_IN_BYTES
     print(f".rodata section size in bytes: {size_dict['.rodata']}")
     print(f".data section size in bytes: {size_dict['.data']}")
-    self.dataSectionSizeInBytes = size_dict[".rodata"] + size_dict[".data"]
+    # The linker places .got after .data (orphan section) and aligns each
+    # section to 8 bytes; both must fit before the fixed .bss start.
+    self.dataSectionSizeInBytes = (size_dict[".rodata"] + size_dict[".data"]
+                                   + size_dict.get(".got", 0) + 16)
     # don't let the bss section size be zero
     print(f".bss section size in bytes: {size_dict['.bss']}")
     self.bssSectionSizeInBytes = size_dict[".bss"] if size_dict[".bss"] else 4096 # at least a 4KB page
