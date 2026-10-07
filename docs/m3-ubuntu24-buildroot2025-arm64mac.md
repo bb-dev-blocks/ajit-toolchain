@@ -33,12 +33,14 @@ All product edits live in `repos/ajit-toolchain`. Nested AHIR must be **inside**
 | Toolchain | `repos/ajit-toolchain` (this milestone’s commit on `marshal_updates`) |
 | AHIR | `repos/ajit-toolchain/ahir` @ `88e85c987bfb8a1eaf6d415bbbd1fe625dde764f` (`git@github.com:bb-dev-blocks/ahir.git`). Keep the gitlink on this sha, not `master`. |
 | Buildroot wrappers | `repos/ajit-toolchain/buildroot_src_2025.02/` (`setup.sh`, `pathsetup.sh`, `ajit_sparc32_uclibc_defconfig`, vendored `buildroot-2025.02.18/`) |
-| Parent tarball | `buildroot-2025.02.18.tar.gz` at aparajit root — **extract source only**, do not commit it |
+| Upstream tarball | <https://buildroot.org/downloads/buildroot-2025.02.18.tar.gz> (8,134,652 bytes, SHA-256 `0620c699b3a1da41cc854bc8584692b913e57e284d3328121c674a43b8707ab1`). Its contents are already vendored above; download it only to re-vendor, and do not commit it |
 | AHIR release | `repos/ajit-toolchain/ahir_release/` — seven host C libraries are gitignored and rebuilt by `scripts/install_ahir_c_libs.sh` (`libPipeHandler.so`, `libPipeHandlerDebugPthreads.so`, `libSockPipes.so`, `libBitVectors.a`, `libfpu.so`, `libtimer.so`, `libllvm_intrinsics.so`). Other shared libraries stay as the vendored x86 drop. |
 
 If the vendored Buildroot tree is missing (fresh clone without that directory):
 
 ```bash
+curl -LO https://buildroot.org/downloads/buildroot-2025.02.18.tar.gz
+shasum -a 256 buildroot-2025.02.18.tar.gz   # 0620c699…7ab1, as in the table above
 mkdir -p repos/ajit-toolchain/buildroot_src_2025.02
 tar xf buildroot-2025.02.18.tar.gz -C repos/ajit-toolchain/buildroot_src_2025.02
 # results in .../buildroot_src_2025.02/buildroot-2025.02.18/
