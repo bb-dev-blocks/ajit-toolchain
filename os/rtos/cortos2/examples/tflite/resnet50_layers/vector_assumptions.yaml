@@ -1,0 +1,102 @@
+# Assumptions for vector_estimate.py (ISA v2 SIMD int8 conv / FC kernels).
+# ISA v2 SIMD is not in the C-model or the FPGA prototype; these numbers are
+# an analytic model, re-run the estimate when any of them firms up.
+#
+# Kernel shape assumed for the vector scenarios (docs/arch/isa_v2.txt §3, §4):
+#   weights widened to int16 once (constant data, done offline / in Prepare);
+#   each input row widened to int16 as (x - input_zero_point) once per layer;
+#   inner loop per 4 MACs: ldd input(4×i16), ldd filter(4×i16), VSMULD16,
+#   ADDDREDUCE16 (mask 0xf → 32-bit sum), add into the int32 accumulator.
+#   |x - zp| ≤ 255 and |w| ≤ 127 (symmetric int8 weights), so each product
+#   ≤ 32385 fits the int16 lanes of VSMULD16. There is no int8→int16 unpack
+#   instruction, hence the explicit widen pass.
+#
+# Model per CONV_2D / FULLY_CONNECTED op (measured terms from the reference
+# sweep: invoke cycles on the C-model, invoke instructions on qemu):
+#   insns  = MACs × inner_insns_per_mac
+#          + outputs × per_output_insns + input_elems × widen_insns_per_input
+#   cycles = insns + MACs / macs_per_vector_op × (vector_op_cycles - 1)
+#          + reference_stall × (mispredict share × insns / reference insns
+#                               + icache share × icache_scale
+#                               + dcache share × dcache_scale)
+#   reference_stall = measured invoke cycles - measured invoke insns
+#   (C-model penalties: 4/mispredict, 70/cache miss, 250/TLB miss, 16/trap).
+#   Mispredicts follow loop branches, so they scale with the instruction
+#   count; I-cache misses come from the reference kernel's code footprint.
+# Non-MAC ops keep their measured cost × other_ops_scale.
+# `measured` for inner_insns_per_mac means: the reference instructions/MAC
+# of that config (with per_output / widen at 0 this reproduces the reference).
+
+# Split of reference conv stall cycles, from C-model counter deltas between
+# ROWS=4 and ROWS=1 runs of op 9 (setup cancels): mispredicts 52.3%,
+# I-cache 31.6%, D-cache 13.4% (TLB ≈ 0; remainder ~2.7% put in dcache).
+reference_stall_split:
+  mispredict: 0.523
+  icache: 0.316
+  dcache: 0.161
+
+scenarios:
+  scalar-identity:
+    description: Reference kernels as measured; sanity check (must give 1.00x).
+    inner_insns_per_mac: measured
+    per_output_insns: 0
+    widen_insns_per_input: 0
+    macs_per_vector_op: 1
+    vector_op_cycles: 1
+    icache_scale: 1.0
+    dcache_scale: 1.0
+    other_ops_scale: 1.0
+
+  optimized-scalar:
+    description: >-
+      No SIMD; hand-optimized SPARC v8 inner loop (ldsb, ldsb, smul, add +
+      amortized pointer/loop ≈ 0.5). Separates loop restructuring from the
+      gain due to vector instructions.
+    inner_insns_per_mac: 4.5
+    per_output_insns: 40       # bias add + MultiplyByQuantizedMultiplier (64-bit
+                               # product emulated on 32-bit SPARC) + clamp + store
+    widen_insns_per_input: 0
+    macs_per_vector_op: 1
+    vector_op_cycles: 1
+    icache_scale: 0.2   # tight loop stays resident in the I-cache
+    dcache_scale: 1.0
+    other_ops_scale: 1.0
+
+  vector-conservative:
+    description: >-
+      4 MACs per iteration, no unrolling, loop overhead 2 insns per iteration,
+      vector multiply takes 2 cycles, requantize unchanged from scalar.
+    inner_insns_per_mac: 1.75  # (5 + 2) / 4
+    per_output_insns: 60
+    widen_insns_per_input: 6   # ldsb, sub zp, sth + loop
+    macs_per_vector_op: 4
+    vector_op_cycles: 2
+    icache_scale: 0.5   # widen pass + kernel code still miss
+    dcache_scale: 1.0
+    other_ops_scale: 1.0
+
+  vector-expected:
+    description: >-
+      4 MACs per VSMULD16, inner loop unrolled 2x (loop overhead 1 insn per
+      4 MACs), single-cycle vector ops.
+    inner_insns_per_mac: 1.5   # (5 + 1) / 4
+    per_output_insns: 40
+    widen_insns_per_input: 4
+    macs_per_vector_op: 4
+    vector_op_cycles: 1
+    icache_scale: 0.2
+    dcache_scale: 1.0
+    other_ops_scale: 1.0
+
+  vector-optimistic:
+    description: >-
+      Unrolled 4x with accumulators kept in registers, requantize trimmed,
+      almost no I-cache misses, fewer D-cache accesses.
+    inner_insns_per_mac: 1.3
+    per_output_insns: 25
+    widen_insns_per_input: 3
+    macs_per_vector_op: 4
+    vector_op_cycles: 1
+    icache_scale: 0.1
+    dcache_scale: 0.8   # 8-byte loads: fewer accesses per MAC
+    other_ops_scale: 1.0
